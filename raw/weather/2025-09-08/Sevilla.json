@@ -1,0 +1,32 @@
+[
+    {
+        "dt": 1757282400,
+        "main": {
+            "temp": 291.34,
+            "feels_like": 291.28,
+            "pressure": 1013,
+            "humidity": 79,
+            "temp_min": 291.34,
+            "temp_max": 294.29
+        },
+        "wind": {
+            "speed": 0.57,
+            "deg": 293,
+            "gust": 1.03
+        },
+        "clouds": {
+            "all": 59
+        },
+        "weather": [
+            {
+                "id": 501,
+                "main": "Rain",
+                "description": "moderate rain",
+                "icon": "10d"
+            }
+        ],
+        "rain": {
+            "1h": 1.34
+        }
+    }
+]
