@@ -1,2 +1,4 @@
 .venv/
 .env_vars.sh
+
+__pycache__

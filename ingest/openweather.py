@@ -4,63 +4,10 @@ import datetime
 import requests
 import os
 from pathlib import Path
-from typing import Any, Callable, Iterable, Literal, Self, TypedDict, Sequence
+from typing import Any, Iterable, Literal, Self
 
-
-OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
-
-
-class Location(TypedDict):
-    id: int
-    name: str
-    lat: int
-    lon: int
-
-
-class EndpointConfig(TypedDict):
-    url: str
-    extra_params: dict[str, Any]
-
-
-type AvailableEndpoints = Literal["weather", "air_pollution"]
-
-
-class Timestamp:
-
-    def __init__(
-        self,
-        value: str | float | int | datetime.datetime,
-        date_format: str = "%Y-%m-%d",
-        time_format: str = "%H:%M:%S",
-    ) -> None:
-        self.format = f"{date_format} {time_format}"
-        self.date_format = date_format
-        self.time_format = time_format
-        if isinstance(value, str):
-            self.datetime = datetime.datetime.strptime(value, self.format)
-        elif isinstance(value, int):
-            self.datetime = datetime.datetime.fromtimestamp(value)
-        elif isinstance(value, datetime.datetime):
-            self.datetime = value
-        else:
-            raise ValueError(
-                f"Cannot parse {value} of type {type(value)} as Timestamp."
-            )
-
-    @property
-    def unix(self) -> int:
-        return int(self.datetime.timestamp())
-
-    @property
-    def value(self) -> str:
-        return self.datetime.strftime(self.format)
-
-    @property
-    def date(self) -> str:
-        return self.datetime.date().strftime(self.date_format)
-
-    def __hash__(self) -> int:
-        return hash(self.datetime)
+from utils import Timestamp, EndpointConfig, AvailableEndpoints, Location
+from adls_uploader import ADLSUploader
 
 
 class OpenWeather:
@@ -91,6 +38,10 @@ class OpenWeather:
             ),
         }
         self.raw_dir: Path
+        self.upload_to_adls: bool = False
+        self.adls_uploader: ADLSUploader
+
+        self.location_directory: Path | str
 
     @property
     def base_params(self) -> dict[str, Any]:
@@ -100,9 +51,18 @@ class OpenWeather:
             "end": self.end_date.unix,
         }
 
-    def get_params(self, location: Location) -> dict[str, Any]:
+    def get_params(
+        self,
+        location: Location,
+        start_date: Timestamp | None = None,
+        end_date: Timestamp | None = None,
+    ) -> dict[str, Any]:
         params = self.base_params.copy()
         params.update({"lat": location["lat"], "lon": location["lon"]})
+        if start_date:
+            params.update({"start": start_date.unix})
+        if end_date:
+            params.update({"start": end_date.unix})
         return params
 
     def set_date_range(
@@ -123,6 +83,25 @@ class OpenWeather:
         self.locations = locations
         return self
 
+    def set_locations_path(self, locations_path: str | Path) -> Self:
+
+        self.locations_path = locations_path
+
+        with open(self.locations_path, "r") as f:
+            locations = json.load(f)
+
+        return self.set_locations(
+            [
+                Location(
+                    id=location["city"]["id"]["$numberLong"],
+                    name=location["city"]["name"],
+                    lat=location["city"]["coord"]["lat"],
+                    lon=location["city"]["coord"]["lon"],
+                )
+                for location in locations
+            ]
+        )
+
     def set_endpoints(
         self, endpoints: Iterable[AvailableEndpoints] | Literal["all"]
     ) -> Self:
@@ -132,23 +111,53 @@ class OpenWeather:
             self.endpoints = endpoints
         return self
 
-    def set_raw_dir_path(self, raw_dir_path: str) -> Self:
-        self.raw_dir = Path(raw_dir_path)
+    def set_raw_dir_path(self, raw_dir_path: str | Path) -> Self:
+        if isinstance(raw_dir_path, str):
+            self.raw_dir = Path(raw_dir_path)
+        else:
+            self.raw_dir = raw_dir_path
+        return self
+
+    def set_adls_location(self, adls_uplaoder: ADLSUploader) -> Self:
+        self.adls_uploader = adls_uplaoder
+        self.upload_to_adls = True
         return self
 
     def fetch_endpoint(self, endpoint: AvailableEndpoints, location: Location):
-        params = self.get_params(location)
-        params.update(self.endpoint_config[endpoint]["extra_params"])
+        data = []
+        finished_fetch = False
+        max_date = self.start_date
+        while not finished_fetch:
+            start_date = max_date.get_as_start()
+            params = self.get_params(location, start_date=start_date)
+            params.update(self.endpoint_config[endpoint]["extra_params"])
 
-        response = requests.get(self.endpoint_config[endpoint]["url"], params=params)
-        response.raise_for_status()
+            response = requests.get(
+                self.endpoint_config[endpoint]["url"], params=params
+            )
+            response.raise_for_status()
 
-        data = response.json()["list"]
+            new_data = response.json()["list"]
+            for row in new_data:
+                row_date = Timestamp(int(row["dt"]))
+                if row_date.datetime.date() == self.end_date.datetime.date():
+                    finished_fetch = True
+                    break
+                elif row_date > max_date:
+                    max_date = row_date
+
+            data.extend(new_data)
+            max_date = max_date + datetime.timedelta(days=1)
 
         self.save_raw_data(location, data, endpoint)
 
     def fetch(self):
+
+        if not (hasattr(self, "raw_dir") and not isinstance(self.raw_dir, str)):
+            raise RuntimeError("Raw directory must be set and be a string")
+
         for location in self.locations:
+            print(f"Fetching data for location {location}")
             for endpoint in self.endpoints:
                 self.fetch_endpoint(endpoint, location)
 
@@ -165,6 +174,12 @@ class OpenWeather:
     def save_raw_data(
         self, location: Location, data: list[dict[str, Any]], endpoint_name: str
     ):
+        def safe_rmdir(dir: Path):
+            try:
+                dir.rmdir()
+            except OSError:
+                pass
+
         for date, batch in self.batch_raw_data(data).items():
             out_dir = self.raw_dir / endpoint_name / date
             if not out_dir.exists():
@@ -174,36 +189,17 @@ class OpenWeather:
             with out_file.open("w") as f:
                 json.dump(batch, f, indent=4)
 
+            if self.upload_to_adls:
+                cloud_file_path = (
+                    Path(endpoint_name) / date / (location["name"] + ".json")
+                )
+                self.adls_uploader.upload_file(
+                    out_file, cloud_file_path, clear_source=True
+                )
 
-def _get_locations(locations_path: str) -> list[Location]:
-    with open(locations_path, "r") as f:
-        locations = json.load(f)
-
-    return [
-        Location(
-            id=location["city"]["id"]["$numberLong"],
-            name=location["city"]["name"],
-            lat=location["city"]["coord"]["lat"],
-            lon=location["city"]["coord"]["lon"],
-        )
-        for location in locations
-    ]
-
-
-def ingest_openweather():
-    locations = _get_locations("ingest/config/locations.json")
-    start_date = Timestamp("2025-09-09 00:00:00")
-    end_date = Timestamp("2025-09-11 23:59:59")
-
-    open_weather = (
-        OpenWeather(OPENWEATHER_SECRET)
-        .set_date_range(start_date=start_date, end_date=end_date)
-        .set_locations(locations)
-        .set_endpoints("all")
-    )
-
-    open_weather.fetch()
-
-
-if __name__ == "__main__":
-    ingest_openweather()
+        # Cleanup directories if raw directories are empty
+        for dir in self.raw_dir.iterdir():
+            for nested_dir in dir.iterdir():
+                safe_rmdir(nested_dir)
+            safe_rmdir(dir)
+        safe_rmdir(self.raw_dir)
