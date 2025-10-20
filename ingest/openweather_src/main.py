@@ -4,12 +4,10 @@ from pathlib import Path
 from typing import Iterable, Literal
 from argparse import ArgumentParser
 
-from adls_uploader import ADLSUploader
-from openweather import OpenWeather
-from utils import Timestamp, AvailableEndpoints
 
-
-OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
+from openweather_src.adls_uploader import ADLSUploader
+from openweather_src.openweather import OpenWeather
+from openweather_src.utils import Timestamp, AvailableEndpoints
 
 
 def ingest_openweather(
@@ -18,8 +16,9 @@ def ingest_openweather(
     end_date: date | datetime | int | str | None,
     upload_to_adls: bool,
     endpoints: Iterable[AvailableEndpoints] | Literal["all"],
-    out_dir: str | Path,
+    out_dir: str | Path | None,
 ):
+    OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
 
     # Handle ADLS
     if upload_to_adls:
@@ -60,8 +59,11 @@ def ingest_openweather(
         .set_date_range(start_date=start, end_date=end)
         .set_locations_path(locations_path)
         .set_endpoints(endpoints)
-        .set_raw_dir_path(out_dir)
     )
+
+    if out_dir:
+        open_weather.set_raw_dir_path(out_dir)
+
     print(open_weather.start_date)
     print(open_weather.end_date)
 
@@ -96,7 +98,7 @@ if __name__ == "__main__":
         )
 
     if not out_directory and upload_to_adls:
-        out_directory = ".tmp_out"
+        out_directory = None
 
     print(args)
     ingest_openweather(

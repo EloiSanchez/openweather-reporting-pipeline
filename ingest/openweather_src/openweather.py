@@ -1,13 +1,18 @@
-from collections import defaultdict
+import os
 import json
 import datetime
 import requests
-import os
+from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Literal, Self
 
-from utils import Timestamp, EndpointConfig, AvailableEndpoints, Location
-from adls_uploader import ADLSUploader
+from openweather_src.utils import (
+    Timestamp,
+    EndpointConfig,
+    AvailableEndpoints,
+    Location,
+)
+from openweather_src.adls_uploader import ADLSUploader
 
 
 class OpenWeather:
@@ -37,11 +42,9 @@ class OpenWeather:
                 extra_params={},
             ),
         }
-        self.raw_dir: Path
+        self.raw_dir: Path | None = None
         self.upload_to_adls: bool = False
         self.adls_uploader: ADLSUploader
-
-        self.location_directory: Path | str
 
     @property
     def base_params(self) -> dict[str, Any]:
@@ -181,25 +184,26 @@ class OpenWeather:
                 pass
 
         for date, batch in self.batch_raw_data(data).items():
-            out_dir = self.raw_dir / endpoint_name / date
-            if not out_dir.exists():
-                out_dir.mkdir(parents=True)
-            out_file = out_dir / (location["name"] + ".json")
 
-            with out_file.open("w") as f:
-                json.dump(batch, f, indent=4)
+            if self.raw_dir:
+                out_dir = self.raw_dir / endpoint_name / date
+                out_file = out_dir / (location["name"] + ".json")
+
+                if not out_dir.exists():
+                    out_dir.mkdir(parents=True)
+                with out_file.open("w") as f:
+                    json.dump(batch, f, indent=4)
 
             if self.upload_to_adls:
                 cloud_file_path = (
                     Path(endpoint_name) / date / (location["name"] + ".json")
                 )
-                self.adls_uploader.upload_file(
-                    out_file, cloud_file_path, clear_source=True
-                )
+                self.adls_uploader.upload_batch(batch, cloud_file_path)
 
         # Cleanup directories if raw directories are empty
-        for dir in self.raw_dir.iterdir():
-            for nested_dir in dir.iterdir():
-                safe_rmdir(nested_dir)
-            safe_rmdir(dir)
-        safe_rmdir(self.raw_dir)
+        if self.raw_dir:
+            for dir in self.raw_dir.iterdir():
+                for nested_dir in dir.iterdir():
+                    safe_rmdir(nested_dir)
+                safe_rmdir(dir)
+            safe_rmdir(self.raw_dir)

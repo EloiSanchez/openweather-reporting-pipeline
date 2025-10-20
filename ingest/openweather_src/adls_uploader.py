@@ -1,7 +1,10 @@
+import io
+import json
 from collections import defaultdict
 from datetime import date
-import os
 from pathlib import Path
+from typing import Any
+
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient
 
@@ -44,16 +47,15 @@ class ADLSUploader:
                 f"in account '{self.account_name}'"
             )
 
-    def upload_file(
-        self, local_file_path: Path, cloud_file_path: Path, clear_source: bool = False
+    def upload_batch(
+        self,
+        batch: list[dict[str, Any]],
+        cloud_file_path: Path,
     ):
         file_client = self.filesystem.get_file_client(str(cloud_file_path))
 
-        with open(local_file_path, "rb") as f:
-            file_client.upload_data(f, overwrite=True)
-
-        if clear_source:
-            os.remove(local_file_path)
+        with io.BytesIO(json.dumps(batch, indent=4).encode()) as binary_data:
+            file_client.upload_data(binary_data, overwrite=True)
 
     def get_last_date_uploaded(self) -> dict[str, date]:
         print("Getting last date uploaded")

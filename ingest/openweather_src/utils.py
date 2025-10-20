@@ -2,8 +2,6 @@ import datetime
 import functools
 from typing import Any, Literal, TypedDict
 
-import json
-
 
 class Location(TypedDict):
     id: int
