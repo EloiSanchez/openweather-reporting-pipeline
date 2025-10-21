@@ -7,8 +7,8 @@ from openweather_src import main
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
 
-@app.route(route="ingest-openweather-eloi")
-def ingest_openweather_eloi(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="ingest-openweather")
+def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.debug(req.params)
 
@@ -32,3 +32,16 @@ def ingest_openweather_eloi(req: func.HttpRequest) -> func.HttpResponse:
         "Ingestion took place without errors.",
         status_code=200,
     )
+
+
+@app.route(route="transform-openweather")
+def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
+
+    if req.params:
+        return func.HttpResponse(
+            "Parameters seen: \n"
+            + ",\n".join(f"{k}: {v}" for k, v in req.params.items()),
+            status_code=200,
+        )
+
+    return func.HttpResponse("No erros, nice!", status_code=200)
