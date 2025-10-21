@@ -9,7 +9,7 @@ from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient
 
 
-class ADLSUploader:
+class ADLS:
 
     def __init__(
         self,
@@ -19,7 +19,6 @@ class ADLSUploader:
         password: str | None = None,
         tenant_id: str | None = None,
     ) -> None:
-        print("Initializing ADLSUploader")
         self.app_id = app_id
         self.password = password
         self.tenant_id = tenant_id

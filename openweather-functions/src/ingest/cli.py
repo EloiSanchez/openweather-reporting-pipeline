@@ -5,9 +5,9 @@ from typing import Iterable, Literal
 from argparse import ArgumentParser
 
 
-from openweather_src.adls_uploader import ADLSUploader
-from openweather_src.openweather import OpenWeather
-from openweather_src.utils import Timestamp, AvailableEndpoints
+from src.locations.adls import ADLS
+from src.ingest.openweather import OpenWeather
+from src.utils import Timestamp, AvailableEndpoints
 
 
 def ingest_openweather(
@@ -22,16 +22,16 @@ def ingest_openweather(
 
     # Handle ADLS
     if upload_to_adls:
-        adls_uploader = ADLSUploader(
+        adls = ADLS(
             os.environ["AZURE_ACCOUNT_NAME"], os.environ["AZURE_CONTAINER_NAME"]
         )
     else:
-        adls_uploader = None
+        adls = None
 
     # Handle start and end dates
     if start_date is None:
-        if adls_uploader:
-            max_dates = adls_uploader.get_last_date_uploaded()
+        if adls:
+            max_dates = adls.get_last_date_uploaded()
             if max_dates:
                 start = Timestamp(min(max_dates.values()) + timedelta(days=1))
             else:
@@ -64,18 +64,15 @@ def ingest_openweather(
     if out_dir:
         open_weather.set_raw_dir_path(out_dir)
 
-    print(open_weather.start_date)
-    print(open_weather.end_date)
-
     if upload_to_adls:
-        assert isinstance(adls_uploader, ADLSUploader)
-        open_weather = open_weather.set_adls_location(adls_uploader)
+        assert isinstance(adls, ADLS)
+        open_weather = open_weather.set_adls_location(adls)
 
     open_weather.fetch()
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser("OpenWeather Fetching CLI")
+    parser = ArgumentParser("OpenWeather Ingestion CLI")
 
     parser.add_argument("--locations-path", "-lp", required=True)
     parser.add_argument("--start-date", "-sd")

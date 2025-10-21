@@ -6,13 +6,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Literal, Self
 
-from openweather_src.utils import (
+from src.utils import (
     Timestamp,
     EndpointConfig,
     AvailableEndpoints,
     Location,
 )
-from openweather_src.adls_uploader import ADLSUploader
+from src.locations.adls import ADLS
 
 
 class OpenWeather:
@@ -44,7 +44,7 @@ class OpenWeather:
         }
         self.raw_dir: Path | None = None
         self.upload_to_adls: bool = False
-        self.adls_uploader: ADLSUploader
+        self.adls_uploader: ADLS
 
     @property
     def base_params(self) -> dict[str, Any]:
@@ -121,7 +121,7 @@ class OpenWeather:
             self.raw_dir = raw_dir_path
         return self
 
-    def set_adls_location(self, adls_uplaoder: ADLSUploader) -> Self:
+    def set_adls_location(self, adls_uplaoder: ADLS) -> Self:
         self.adls_uploader = adls_uplaoder
         self.upload_to_adls = True
         return self

@@ -2,7 +2,7 @@ import logging
 
 import azure.functions as func
 
-from openweather_src import main
+from src.ingest.cli import ingest_openweather as ingest
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
@@ -10,10 +10,8 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 @app.route(route="ingest-openweather")
 def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
-    logging.debug(req.params)
-
     try:
-        main.ingest_openweather(
+        ingest(
             "config/locations.json",
             start_date=None,
             end_date=None,
