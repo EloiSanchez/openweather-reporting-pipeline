@@ -17,6 +17,8 @@ class EndpointConfig(TypedDict):
 
 type AvailableEndpoints = Literal["weather", "air_pollution"]
 
+type Batch = list[dict[str, Any]]
+
 
 @functools.total_ordering
 class Timestamp:

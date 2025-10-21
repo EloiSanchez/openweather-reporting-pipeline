@@ -5,8 +5,10 @@ from typing import Iterable, Literal
 from argparse import ArgumentParser
 
 
-from src.locations.adls import ADLS
 from src.ingest.openweather import OpenWeather
+from src.destinations.adls import ADLS
+from src.destinations.local_directory import LocalDirectory
+from src.destinations.base_destination import BaseDestination
 from src.utils import Timestamp, AvailableEndpoints
 
 
@@ -20,29 +22,41 @@ def ingest_openweather(
 ):
     OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
 
-    # Handle ADLS
+    # Handle destionations
+    destinations: list[BaseDestination] = []
     if upload_to_adls:
-        adls = ADLS(
-            os.environ["AZURE_ACCOUNT_NAME"], os.environ["AZURE_CONTAINER_NAME"]
+        destinations.append(
+            ADLS(os.environ["AZURE_ACCOUNT_NAME"], os.environ["AZURE_CONTAINER_NAME"])
         )
-    else:
-        adls = None
 
-    # Handle start and end dates
+    if out_dir:
+        destinations.append(LocalDirectory(out_dir))
+
+    if not destinations:
+        raise ValueError(
+            "Either data is uploaded to adls (-adls), an output directory is given (-o "
+            "<out_dir>) or both."
+        )
+
+    # Handle start date
     if start_date is None:
-        if adls:
-            max_dates = adls.get_last_date_uploaded()
-            if max_dates:
-                start = Timestamp(min(max_dates.values()) + timedelta(days=1))
-            else:
-                raise ValueError(
-                    "`start_date` was not provided and previous data could not be found in ADLS"
-                )
+        max_dates: list[date] = []
+        for destination in destinations:
+            max_dates.extend(
+                [min_date for min_date in destination.get_last_date_saved().values()]
+            )
+
+        if max_dates:
+            start = Timestamp(min(max_dates) + timedelta(days=1))
         else:
-            raise ValueError("`start_date` must be provided when not working with adls")
+            raise ValueError(
+                "`start_date` was not provided and previous data could not be found in "
+                f"destinations ({destinations})"
+            )
     else:
         start = Timestamp(start_date)
 
+    # Handle end date
     if end_date is None:
         yesterday = date.today() - timedelta(days=1)
         end = Timestamp(
@@ -59,14 +73,8 @@ def ingest_openweather(
         .set_date_range(start_date=start, end_date=end)
         .set_locations_path(locations_path)
         .set_endpoints(endpoints)
+        .set_destinations(destinations)
     )
-
-    if out_dir:
-        open_weather.set_raw_dir_path(out_dir)
-
-    if upload_to_adls:
-        assert isinstance(adls, ADLS)
-        open_weather = open_weather.set_adls_location(adls)
 
     open_weather.fetch()
 
@@ -88,16 +96,7 @@ if __name__ == "__main__":
     upload_to_adls = args.upload_to_adls
     endpoints = args.endpoints or "all"
     out_directory = args.out_directory
-    if not upload_to_adls and not out_directory:
-        raise ValueError(
-            "Either data is uploaded to adls (-adls), an output directory is given (-o "
-            "<out_dir>) or both."
-        )
 
-    if not out_directory and upload_to_adls:
-        out_directory = None
-
-    print(args)
     ingest_openweather(
         locations_path, start_date, end_date, upload_to_adls, endpoints, out_directory
     )

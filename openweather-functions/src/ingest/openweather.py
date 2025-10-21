@@ -6,13 +6,14 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Literal, Self
 
+from src.destinations.base_destination import BaseDestination
 from src.utils import (
+    Batch,
     Timestamp,
     EndpointConfig,
     AvailableEndpoints,
     Location,
 )
-from src.locations.adls import ADLS
 
 
 class OpenWeather:
@@ -42,9 +43,7 @@ class OpenWeather:
                 extra_params={},
             ),
         }
-        self.raw_dir: Path | None = None
-        self.upload_to_adls: bool = False
-        self.adls_uploader: ADLS
+        self.destinations: list[BaseDestination] = []
 
     @property
     def base_params(self) -> dict[str, Any]:
@@ -121,13 +120,29 @@ class OpenWeather:
             self.raw_dir = raw_dir_path
         return self
 
-    def set_adls_location(self, adls_uplaoder: ADLS) -> Self:
-        self.adls_uploader = adls_uplaoder
-        self.upload_to_adls = True
+    def set_destinations(self, destinations: list[BaseDestination]) -> Self:
+        self.destinations = destinations
         return self
 
+    def add_destination(self, destination: BaseDestination):
+        self.destinations.append(destination)
+
+    def fetch(self):
+
+        if not hasattr(self, "destinations"):
+            raise RuntimeError("Output location must be set before fetching data")
+
+        try:
+            for location in self.locations:
+                for endpoint in self.endpoints:
+                    self.fetch_endpoint(endpoint, location)
+        except Exception as e:
+            raise e
+        finally:
+            for destination in self.destinations:
+                destination.clean_up()
+
     def fetch_endpoint(self, endpoint: AvailableEndpoints, location: Location):
-        data = []
         finished_fetch = False
         max_date = self.start_date
         while not finished_fetch:
@@ -140,8 +155,8 @@ class OpenWeather:
             )
             response.raise_for_status()
 
-            new_data = response.json()["list"]
-            for row in new_data:
+            data = response.json()["list"]
+            for row in data:
                 row_date = Timestamp(int(row["dt"]))
                 if row_date.datetime.date() == self.end_date.datetime.date():
                     finished_fetch = True
@@ -149,61 +164,21 @@ class OpenWeather:
                 elif row_date > max_date:
                     max_date = row_date
 
-            data.extend(new_data)
+            self.save_raw_data(location, data, endpoint)
             max_date = max_date + datetime.timedelta(days=1)
 
-        self.save_raw_data(location, data, endpoint)
+    def save_raw_data(
+        self, location: Location, data: list[dict[str, Any]], endpoint_name: str
+    ):
+        for date, batch in self.batch_raw_data(data).items():
+            out_file_path = Path(endpoint_name) / date / (location["name"] + ".json")
+            for destination in self.destinations:
+                destination.save_batch(batch, out_file_path)
 
-    def fetch(self):
-
-        if not (hasattr(self, "raw_dir") and not isinstance(self.raw_dir, str)):
-            raise RuntimeError("Raw directory must be set and be a string")
-
-        for location in self.locations:
-            print(f"Fetching data for location {location}")
-            for endpoint in self.endpoints:
-                self.fetch_endpoint(endpoint, location)
-
-    def batch_raw_data(
-        self, data: list[dict[str, Any]]
-    ) -> dict[str, list[dict[str, Any]]]:
+    def batch_raw_data(self, data: list[dict[str, Any]]) -> dict[str, Batch]:
         batched_data = defaultdict(list)
         for row in data:
             dt = Timestamp(row["dt"]).date
             batched_data[dt].append(row)
 
         return batched_data
-
-    def save_raw_data(
-        self, location: Location, data: list[dict[str, Any]], endpoint_name: str
-    ):
-        def safe_rmdir(dir: Path):
-            try:
-                dir.rmdir()
-            except OSError:
-                pass
-
-        for date, batch in self.batch_raw_data(data).items():
-
-            if self.raw_dir:
-                out_dir = self.raw_dir / endpoint_name / date
-                out_file = out_dir / (location["name"] + ".json")
-
-                if not out_dir.exists():
-                    out_dir.mkdir(parents=True)
-                with out_file.open("w") as f:
-                    json.dump(batch, f, indent=4)
-
-            if self.upload_to_adls:
-                cloud_file_path = (
-                    Path(endpoint_name) / date / (location["name"] + ".json")
-                )
-                self.adls_uploader.upload_batch(batch, cloud_file_path)
-
-        # Cleanup directories if raw directories are empty
-        if self.raw_dir:
-            for dir in self.raw_dir.iterdir():
-                for nested_dir in dir.iterdir():
-                    safe_rmdir(nested_dir)
-                safe_rmdir(dir)
-            safe_rmdir(self.raw_dir)
