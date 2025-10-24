@@ -3,7 +3,7 @@ import json
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
-from typing import Any
+from typing import Any, Generator
 
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient
@@ -72,3 +72,18 @@ class ADLS(BaseDestination):
                 max_dates[dir] = max(new_date, max_dates[dir])
 
         return max_dates or {}
+
+    def iterate_file_data(
+        self, dir: Path | str = "."
+    ) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
+        dir_client = self.filesystem.get_directory_client(str(dir))
+        for path in dir_client.get_paths():
+            if path.name.endswith(".json"):
+                try:
+                    yield path.name, json.loads(
+                        self.filesystem.get_file_client(path.name)
+                        .download_file()
+                        .readall()
+                    )
+                except Exception as e:
+                    raise e

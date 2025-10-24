@@ -9,7 +9,8 @@ from src.ingest.openweather import OpenWeather
 from src.destinations.adls import ADLS
 from src.destinations.local_directory import LocalDirectory
 from src.destinations.base_destination import BaseDestination
-from src.utils import Timestamp, AvailableEndpoints
+from src.utils.timestamp import Timestamp
+from src.utils.types import AvailableEndpoints
 
 
 def ingest_openweather(

@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Any, Iterable, Literal, Self
 
 from src.destinations.base_destination import BaseDestination
-from src.utils import (
+from src.utils.timestamp import Timestamp
+from src.utils.types import (
     Batch,
-    Timestamp,
     EndpointConfig,
     AvailableEndpoints,
     Location,
