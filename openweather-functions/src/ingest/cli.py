@@ -18,6 +18,7 @@ def ingest_openweather(
     start_date: date | datetime | int | str | None,
     end_date: date | datetime | int | str | None,
     upload_to_adls: bool,
+    save_local: bool,
     endpoints: Iterable[AvailableEndpoints] | Literal["all"],
     out_dir: str | Path | None,
 ):
@@ -27,10 +28,16 @@ def ingest_openweather(
     destinations: list[BaseDestination] = []
     if upload_to_adls:
         destinations.append(
-            ADLS(os.environ["AZURE_ACCOUNT_NAME"], os.environ["AZURE_CONTAINER_NAME"])
+            ADLS(
+                os.environ["AZURE_ACCOUNT_NAME"],
+                os.environ["AZURE_CONTAINER_NAME"],
+                directory=out_dir,
+            )
         )
 
-    if out_dir:
+    if save_local:
+        if out_dir is None:
+            out_dir = Path(".")
         destinations.append(LocalDirectory(out_dir))
 
     if not destinations:
@@ -87,6 +94,7 @@ if __name__ == "__main__":
     parser.add_argument("--start-date", "-sd")
     parser.add_argument("--end-date", "-ed")
     parser.add_argument("--upload-to-adls", "-adls", action="store_true")
+    parser.add_argument("--save-local", "-sl", action="store_true")
     parser.add_argument("--endpoints", "-e", action="extend", nargs="+", type=str)
     parser.add_argument("--out-directory", "-o")
     args = parser.parse_args()
@@ -95,9 +103,16 @@ if __name__ == "__main__":
     start_date = args.start_date
     end_date = args.end_date
     upload_to_adls = args.upload_to_adls
+    save_local = args.save_local
     endpoints = args.endpoints or "all"
     out_directory = args.out_directory
 
     ingest_openweather(
-        locations_path, start_date, end_date, upload_to_adls, endpoints, out_directory
+        locations_path,
+        start_date,
+        end_date,
+        upload_to_adls,
+        save_local,
+        endpoints,
+        out_directory,
     )

@@ -6,8 +6,12 @@ from src.destinations.local_directory import LocalDirectory
 
 spark = SparkSession.builder.getOrCreate()
 
-local_directory = LocalDirectory("../out_raw/")
-adls = ADLS(os.environ["AZURE_ACCOUNT_NAME"], os.environ["AZURE_CONTAINER_NAME"])
+local_directory = LocalDirectory("../data/raw/")
+adls = ADLS(
+    os.environ["AZURE_ACCOUNT_NAME"],
+    os.environ["AZURE_CONTAINER_NAME"],
+    directory="raw",
+)
 
 for location in (local_directory, adls):
     for dir in ("weather", "air_pollution"):

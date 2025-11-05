@@ -19,9 +19,8 @@ class LocalDirectory(BaseDestination):
         self.name = f"Local Directory ({self.dir})"
 
         if not self.dir.exists():
-
             self.print("Creating out directory")
-            self.dir.mkdir()
+            self.dir.mkdir(parents=True)
 
     def save_batch(self, batch: Batch, out_file_path: Path):
         full_local_path = self.dir / out_file_path

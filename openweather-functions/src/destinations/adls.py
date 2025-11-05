@@ -21,6 +21,7 @@ class ADLS(BaseDestination):
         app_id: str | None = None,
         password: str | None = None,
         tenant_id: str | None = None,
+        directory: str | Path | None = None,
     ) -> None:
         super().__init__()
 
@@ -51,12 +52,16 @@ class ADLS(BaseDestination):
                 f"in account '{self.account_name}'"
             )
 
+        self.directory = self.filesystem.get_directory_client(str(directory) or "/")
+        if not self.directory.exists():
+            self.directory.create_directory()
+
     def save_batch(
         self,
         batch: list[dict[str, Any]],
         out_file_path: Path,
     ):
-        file_client = self.filesystem.get_file_client(str(out_file_path))
+        file_client = self.directory.get_file_client(str(out_file_path))
 
         with io.BytesIO(json.dumps(batch, indent=4).encode()) as binary_data:
             file_client.upload_data(binary_data, overwrite=True)
@@ -64,7 +69,7 @@ class ADLS(BaseDestination):
     def get_last_date_saved(self) -> dict[str, date]:
         self.print("Getting last date uploaded")
         max_dates = defaultdict(lambda: date(1, 1, 1))
-        for path in self.filesystem.get_paths():
+        for path in self.directory.get_paths():
             if path.is_directory and "/" in path.name:
                 *dir, date_str = path.name.split("/")
                 dir = "/".join(dir)
@@ -76,7 +81,9 @@ class ADLS(BaseDestination):
     def iterate_file_data(
         self, dir: Path | str = "."
     ) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
-        dir_client = self.filesystem.get_directory_client(str(dir))
+        dir_client = self.filesystem.get_directory_client(
+            "/".join(p.strip(" /") for p in (self.directory.path_name, str(dir)))
+        )
         for path in dir_client.get_paths():
             if path.name.endswith(".json"):
                 try:

@@ -16,8 +16,9 @@ def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
             start_date=None,
             end_date=None,
             upload_to_adls=True,
+            save_local=True,
             endpoints="all",
-            out_dir=None,
+            out_dir="raw",
         )
     except Exception as e:
         logging.exception("There has been an error ingesting data from OpenWeather")
