@@ -19,6 +19,8 @@ from src.utils.types import (
 class OpenWeather:
 
     def __init__(self, secret: str | None) -> None:
+        self.name = "OpenWeather"
+        self.ingestion_id = self.name + "-" + datetime.datetime.now().isoformat()
         self.secret: str = (
             secret if secret else os.environ.get("OPENWEATHER_SECRET_KEY", "")
         )
@@ -120,6 +122,9 @@ class OpenWeather:
             self.raw_dir = raw_dir_path
         return self
 
+    def set_ingestion_id(self, id: str):
+        self.ingestion_id = id
+
     def set_destinations(self, destinations: list[BaseDestination]) -> Self:
         self.destinations = destinations
         return self
@@ -177,7 +182,10 @@ class OpenWeather:
 
     def batch_raw_data(self, data: list[dict[str, Any]]) -> dict[str, Batch]:
         batched_data = defaultdict(list)
+        stamp = {"source": self.name, "ingestion_id": self.ingestion_id}
         for row in data:
+            row.update(stamp)
+            row["ingested_at"] = datetime.datetime.now().isoformat()
             dt = Timestamp(row["dt"]).date
             batched_data[dt].append(row)
 

@@ -21,6 +21,7 @@ def ingest_openweather(
     save_local: bool,
     endpoints: Iterable[AvailableEndpoints] | Literal["all"],
     out_dir: str | Path | None,
+    ingestion_id: str | None,
 ):
     OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
 
@@ -83,6 +84,8 @@ def ingest_openweather(
         .set_endpoints(endpoints)
         .set_destinations(destinations)
     )
+    if ingestion_id:
+        open_weather.set_ingestion_id(ingestion_id)
 
     open_weather.fetch()
 
@@ -97,6 +100,7 @@ if __name__ == "__main__":
     parser.add_argument("--save-local", "-sl", action="store_true")
     parser.add_argument("--endpoints", "-e", action="extend", nargs="+", type=str)
     parser.add_argument("--out-directory", "-o")
+    parser.add_argument("--ingestion-id", "-id")
     args = parser.parse_args()
 
     locations_path = args.locations_path
@@ -106,6 +110,7 @@ if __name__ == "__main__":
     save_local = args.save_local
     endpoints = args.endpoints or "all"
     out_directory = args.out_directory
+    ingestion_id = args.ingestion_id
 
     ingest_openweather(
         locations_path,
@@ -115,4 +120,5 @@ if __name__ == "__main__":
         save_local,
         endpoints,
         out_directory,
+        ingestion_id,
     )

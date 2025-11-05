@@ -72,8 +72,11 @@ class ADLS(BaseDestination):
         self.print("Getting last date uploaded")
         max_dates = defaultdict(lambda: date(1, 1, 1))
         for path in self.directory.get_paths():
-            if path.is_directory and "/" in path.name:
-                *dir, date_str = path.name.split("/")
+            print(path)
+            path_without_root = path.name[len(self.directory.path_name) :].strip("/")
+            print(path_without_root)
+            if path.is_directory and "/" in path_without_root:
+                *dir, date_str = path_without_root.split("/")
                 dir = "/".join(dir)
                 new_date = date.fromisoformat(date_str)
                 max_dates[dir] = max(new_date, max_dates[dir])

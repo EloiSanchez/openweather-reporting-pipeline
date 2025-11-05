@@ -11,14 +11,18 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
+        logging.info(req.params)
+        logging.info(req.get_body())
+        logging.info(req.headers.get("run_id"))
         ingest(
             "config/locations.json",
             start_date=None,
             end_date=None,
             upload_to_adls=True,
-            save_local=True,
+            save_local=False,
             endpoints="all",
             out_dir="raw",
+            ingestion_id=req.headers.get("run_id"),
         )
     except Exception as e:
         logging.exception("There has been an error ingesting data from OpenWeather")
