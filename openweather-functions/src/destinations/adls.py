@@ -52,7 +52,9 @@ class ADLS(BaseDestination):
                 f"in account '{self.account_name}'"
             )
 
-        self.directory = self.filesystem.get_directory_client(str(directory) or "/")
+        self.directory = self.filesystem.get_directory_client(
+            str(directory) if directory else "/"
+        )
         if not self.directory.exists():
             self.directory.create_directory()
 
