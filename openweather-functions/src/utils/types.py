@@ -21,3 +21,11 @@ type NestedKeyPath = list[str]
 type DictRow = dict[str, Any]
 
 type Batch = list[DictRow]
+
+type ColumnName = str
+type ColumnType = str
+
+
+class ColumnDefinition(TypedDict):
+    name: ColumnName
+    type: ColumnType

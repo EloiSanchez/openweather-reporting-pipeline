@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from typing import Generator
 
+from duckdb import DuckDBPyRelation
+
 from src.destinations.base_destination import BaseDestination
 from src.utils.types import Batch, Any
 
@@ -60,3 +62,10 @@ class LocalDirectory(BaseDestination):
             dir.rmdir()
         except OSError:
             pass
+
+    def save_relation_as_parquet(
+        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+    ):
+        relation.to_parquet(
+            str(self.dir / dir / (table_name + ".parquet")), overwrite=True
+        )

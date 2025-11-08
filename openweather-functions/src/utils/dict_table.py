@@ -1,7 +1,7 @@
 import json
-from typing import Any, Literal, overload
+from typing import Any, Generator, Literal, overload
 
-from src.utils.types import NestedKeyPath, DictRow
+from src.utils.types import ColumnDefinition, NestedKeyPath, DictRow
 
 
 class DictTable:
@@ -26,7 +26,7 @@ class DictTable:
 
         value += "\nColumns\n"
         for column in self.columns:
-            value += "- " + "_".join(column) + "\n"
+            value += "- " + "__".join(column[1:]) + "\n"
 
         value += f"\nNumber of rows: {len(self.rows)}\n"
         if self.rows:
@@ -41,39 +41,34 @@ class DictTable:
         self.update_columns(other.columns)
         self.rows.extend(other.rows)
 
-    def get_data(self):
-        all_rows = []
+    def get_data(self) -> Generator[list[Any], None, None]:
         for row in self.rows:
             new_row = []
             for column in self.columns:
+                # print(f"Accessing {row=} {column=}")
                 new_row.append(self.access_nested_key(row, column, True))
 
-            if self.name == "weather_root":
-                print(new_row)
-            all_rows.append(new_row)
+            yield new_row
 
-        return all_rows
-
-    def get_schema(self) -> str:
-        column_type = ""
-        columns = []
+    def get_schema(self) -> list[ColumnDefinition]:
+        column_type = "VARCHAR"
+        columns: list[ColumnDefinition] = []
         for keys in self.columns:
-            for row in self.rows:
-                value = self.access_nested_key(row, keys, True)
-                if value is None:
-                    continue
-                elif isinstance(value, str):
-                    column_type = "string"
-                    break
-                elif isinstance(value, (int, float)):
-                    column_type = "string"
-                    break
-                else:
-                    raise ValueError(
-                        f"Found bad type ({type(value)}) inferring type of {row=}"
-                    )
-            columns.append(f"{'_'.join(keys)}: {column_type}")
-        return ", ".join(columns)
+            # for row in self.rows:
+            #     value = self.access_nested_key(row, keys, True)
+            #     if value is None:
+            #         continue
+            #     elif isinstance(value, str):
+            #         break
+            #     elif isinstance(value, (int, float)):
+            #         break
+            #     else:
+            #         raise ValueError(
+            #             f"Found bad type ({type(value)}) inferring type of {row=}"
+            #         )
+            # print(column_type)
+            columns.append(ColumnDefinition(name="__".join(keys[1:]), type=column_type))
+        return columns
 
     @staticmethod
     @overload
@@ -97,9 +92,17 @@ class DictTable:
     ) -> Any | None:
         value = dictionary
 
-        for k in nested_keys:
-            if (k not in value) and safe_return:
-                return None
-            value = value[k]
+        for index_count, k in enumerate(nested_keys):
+            if k not in value:
+                if (value == dictionary) and (
+                    index_count + 1 < len(nested_keys)
+                ):  # If still at first level and multiple levels to go
+                    continue
+                elif safe_return:
+                    return None
+            new_value = value[k]
+            if not isinstance(value[k], list):
+                value = new_value
 
-        return str(value)
+        if not isinstance(value, dict):
+            return str(value)

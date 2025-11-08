@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Iterable, Literal
 from argparse import ArgumentParser
 
-
 from src.ingest.openweather import OpenWeather
 from src.destinations.adls import ADLS
 from src.destinations.local_directory import LocalDirectory

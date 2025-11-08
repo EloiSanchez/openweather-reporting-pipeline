@@ -1,5 +1,8 @@
+import logging
+import os
 import io
 import json
+
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
@@ -7,6 +10,8 @@ from typing import Any, Generator
 
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient
+
+from duckdb import DuckDBPyRelation
 
 from src.destinations.base_destination import BaseDestination
 
@@ -16,8 +21,8 @@ class ADLS(BaseDestination):
 
     def __init__(
         self,
-        account_name: str,
-        container: str,
+        account_name: str | None = None,
+        container: str | None = None,
         app_id: str | None = None,
         password: str | None = None,
         tenant_id: str | None = None,
@@ -28,8 +33,8 @@ class ADLS(BaseDestination):
         self.app_id = app_id
         self.password = password
         self.tenant_id = tenant_id
-        self.account_name = account_name
-        self.container = container
+        self.account_name = account_name or os.environ["AZURE_ACCOUNT_NAME"]
+        self.container = container or os.environ["AZURE_CONTAINER_NAME"]
 
         if not (self.app_id and self.password and self.tenant_id):
             self.print("Using default envrionment credentials")
@@ -99,3 +104,27 @@ class ADLS(BaseDestination):
                     )
                 except Exception as e:
                     raise e
+
+    def save_relation_as_parquet(
+        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+    ):
+        if isinstance(dir, str):
+            dir = Path(dir)
+        file_client = self.directory.get_file_client(
+            str(dir / (table_name + ".parquet"))
+        )
+
+        logging.info(f"Cloud location to save parquet file is {file_client.path_name}")
+
+        tmp_file_name = f"/tmp/ingestion_{self.name}_{table_name}.parquet"
+        logging.info(f"Getting tmp file {tmp_file_name}")
+        tmp_file = Path(tmp_file_name)
+        try:
+            logging.info("Writing tmp parquet file")
+            relation.to_parquet(tmp_file_name)
+            logging.info("Uploading tmp file")
+            with open(tmp_file, "rb") as f:
+                file_client.upload_data(f, overwrite=True)
+        finally:
+            logging.info("Cleaning tmp file")
+            tmp_file.unlink()

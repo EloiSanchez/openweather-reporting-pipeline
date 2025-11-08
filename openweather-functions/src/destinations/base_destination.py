@@ -3,6 +3,8 @@ from datetime import date
 from pathlib import Path
 from typing import Generator, Any
 
+from duckdb import DuckDBPyRelation
+
 from src.utils.types import Batch, NestedKeyPath, DictRow
 from src.utils.dict_table import DictTable
 
@@ -20,6 +22,11 @@ class BaseDestination(ABC):
     def iterate_file_data(
         self, dir: Path | str
     ) -> Generator[tuple[str, list[DictRow]], None, None]: ...
+
+    @abstractmethod
+    def save_relation_as_parquet(
+        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+    ): ...
 
     def clean_up(self):
         pass
@@ -68,7 +75,7 @@ class BaseDestination(ABC):
                 )
             elif isinstance(v, list):
                 secondary_tables = self.flatten_dict_rows(
-                    v, "_".join(previous_path + [k]), {"parent_id": row_id}
+                    v, "__".join(previous_path + [k]), {"parent_id": row_id}
                 )
             else:
                 full_path = previous_path + [k]
@@ -101,7 +108,7 @@ class BaseDestination(ABC):
             if id_of_rows:
                 row_id = get_compound_id(row, id_of_rows)
             _, all_paths, secondary_tables = self.extract_keys(
-                row, all_paths, None, row_id
+                row, all_paths, [table_name], row_id
             )
             tables_found[table_name].update_columns(all_paths)
             for found_table_name, found_table in secondary_tables.items():
