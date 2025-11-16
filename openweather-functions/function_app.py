@@ -6,6 +6,7 @@ import duckdb
 from src.destinations.adls import ADLS
 from src.ingest.cli import ingest_openweather as ingest
 from src.transform.flattener import Flattener
+from src.transform.transformer import Transformer
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -29,7 +30,7 @@ def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
         logging.exception("There has been an error ingesting data from OpenWeather")
         return func.HttpResponse(
             f"There has been an error ingesting data from OpenWeather:\n{e}",
-            status_code=500,
+            status_code=501,
         )
 
     return func.HttpResponse(
@@ -38,27 +39,52 @@ def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
     )
 
 
-@app.route(route="transform-openweather")
-def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="stage-openweather")
+def stage_openweather(req: func.HttpRequest) -> func.HttpResponse:
     try:
         con = duckdb.connect()
-        flattener = (
+        (
             Flattener(con)
             .set_source(ADLS(directory="raw"))
             .set_target(ADLS(directory="bronze"))
             .set_directories_to_parse("weather", "air_pollution")
             .set_identifier(req.headers.get("run_id"), "staged_id")
             .set_modified_at_column("staged_at")
+            .flatten()
         )
-        flattener.flatten()
     except Exception as e:
         logging.error(e)
-        func.HttpResponse(f"ERROR: {e}", status_code=500)
+        func.HttpResponse(f"ERROR: {e}", status_code=501)
 
     return func.HttpResponse(f"No erros, nice!", status_code=200)
 
 
+@app.route(route="transform-openweather")
+def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        con = duckdb.connect()
+
+        bronze = ADLS(directory="bronze")
+        silver = ADLS(directory="silver")
+
+        (
+            Transformer(con)
+            .set_models(
+                [
+                    ("sql/silver/weather_rich.sql", silver),
+                ]
+            )
+            .import_tables_from_dir(bronze)
+            .execute()
+        )
+    except Exception as e:
+        logging.error(e)
+        func.HttpResponse(f"ERROR: {e}", status_code=501)
+
+    return func.HttpResponse("No errors, nice!", status_code=200)
+
+
 # if __name__ == "__main__":
-#     logging.getLogger().setLevel(logging.DEBUG)
 #     req = func.HttpRequest("get", "smth", body=b"")
+#      # stage_openweather(req)
 #     transform_openweather(req)

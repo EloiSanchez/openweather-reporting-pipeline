@@ -1,9 +1,10 @@
-from datetime import date
 import json
+import logging
+from datetime import date
 from pathlib import Path
 from typing import Generator
 
-from duckdb import DuckDBPyRelation
+from duckdb import DuckDBPyConnection, DuckDBPyRelation
 
 from src.destinations.base_destination import BaseDestination
 from src.utils.types import Batch, Any
@@ -69,3 +70,20 @@ class LocalDirectory(BaseDestination):
         relation.to_parquet(
             str(self.dir / dir / (table_name + ".parquet")), overwrite=True
         )
+
+    def iter_dir_as_relations(
+        self, con: DuckDBPyConnection, skip_on_error: bool = False
+    ) -> Generator[tuple[str, DuckDBPyRelation], None, None]:
+        for path in self.dir.iterdir():
+
+            if not path.name.endswith(".parquet"):
+                continue
+
+            try:
+                yield Path(path.name).stem, con.from_parquet(str(path))
+            except Exception as e:
+                if not skip_on_error:
+                    raise RuntimeError(
+                        f"Found error getting relation from '{path.name}'"
+                    ) from e
+                logging.warning(f"Could not get relation for file '{path.name}'\n{e}")

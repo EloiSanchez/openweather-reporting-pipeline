@@ -3,7 +3,7 @@ from datetime import date
 from pathlib import Path
 from typing import Generator, Any
 
-from duckdb import DuckDBPyRelation
+from duckdb import DuckDBPyConnection, DuckDBPyRelation
 
 from src.utils.types import Batch, NestedKeyPath, DictRow
 from src.utils.dict_table import DictTable
@@ -28,13 +28,20 @@ class BaseDestination(ABC):
         self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
     ): ...
 
+    @abstractmethod
+    def iter_dir_as_relations(
+        self, con: DuckDBPyConnection, skip_on_error: bool = False
+    ) -> Generator[tuple[str, DuckDBPyRelation], None, None]: ...
+
     def clean_up(self):
         pass
 
     def print(self, value: str):
         print(f"{self.name}: {value}")
 
-    def read_tables_from_dir(self, dir: Path | str, root_table_name: str):
+    def read_tables_from_dir(
+        self, dir: Path | str, root_table_name: str
+    ) -> dict[str, DictTable]:
 
         if isinstance(dir, str):
             dir = Path(dir)

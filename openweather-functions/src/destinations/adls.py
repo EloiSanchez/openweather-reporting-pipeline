@@ -11,7 +11,7 @@ from typing import Any, Generator
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient
 
-from duckdb import DuckDBPyRelation
+from duckdb import DuckDBPyConnection, DuckDBPyRelation
 
 from src.destinations.base_destination import BaseDestination
 
@@ -128,3 +128,32 @@ class ADLS(BaseDestination):
         finally:
             logging.info("Cleaning tmp file")
             tmp_file.unlink()
+
+    def iter_dir_as_relations(
+        self, con: DuckDBPyConnection, skip_on_error: bool = False
+    ) -> Generator[tuple[str, DuckDBPyRelation], None, None]:
+        for path in self.directory.get_paths():
+            if not path.name.endswith(".parquet"):
+                continue
+
+            tmp_file_path = Path(f"/tmp/read_parquet__{path.name.replace('/', '_')}")
+
+            try:
+                with open(tmp_file_path, "wb") as tmp_file:
+                    tmp_file.write(
+                        self.filesystem.get_file_client(path.name)
+                        .download_file()
+                        .readall()
+                    )
+
+                yield Path(path.name).stem, con.from_parquet(str(tmp_file_path))
+
+            except Exception as e:
+                if not skip_on_error:
+                    raise RuntimeError(
+                        f"Found error getting relation from '{path.name}'"
+                    ) from e
+                logging.warning(f"Could not get relation for file '{path.name}'\n{e}")
+
+            finally:
+                tmp_file_path.unlink(missing_ok=True)
