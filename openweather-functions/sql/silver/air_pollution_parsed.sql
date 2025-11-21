@@ -1,0 +1,20 @@
+select
+  components__co::float                         as co,
+  components__nh3::float                        as nh3,
+  components__no::float                         as no,
+  components__no2::float                        as no2,
+  components__o3::float                         as o3,
+  components__pm10::float                       as pm10,
+  components__pm2_5::float                      as pm2_5,
+  components__so2::float                        as so2,
+  main__aqi,
+  path                                          as file_path,
+  source,
+  ingestion_id,
+  ingested_at::timestamp                        as ingested_at,
+  staged_id,
+  staged_at::timestamp                          as staged_at,
+  make_timestamp_ms(dt::bigint * 1000)          as recorded_at,
+  file_path || '-' || dt                        as air_pollution_id,
+  regexp_extract(file_path, '.*/(\w*).json', 1) as location
+from air_pollution

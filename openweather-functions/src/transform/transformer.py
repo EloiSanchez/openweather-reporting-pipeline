@@ -29,6 +29,6 @@ class Transformer:
             self.models.append(DBModel(self.con, path, path.stem, target_location))
         return self
 
-    def execute(self):
+    def execute(self, write_to_tables: bool = True):
         for model in self.models:
-            model.execute()
+            model.execute(write_to_tables)

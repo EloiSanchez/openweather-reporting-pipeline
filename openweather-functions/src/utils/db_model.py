@@ -19,7 +19,7 @@ class DBModel:
         self.destination: BaseDestination = destination
         self.relation: DuckDBPyRelation
 
-    def execute(self):
+    def execute(self, write_to_file: bool = True):
 
         # Read and execute sql transformation
         with open(self.sql_path, "r") as sql_file:
@@ -28,5 +28,10 @@ class DBModel:
         # Save to duckdb database
         self.relation.to_table(self.table_name)
 
-        # Save to target destination
-        self.destination.save_relation_as_parquet(".", self.relation, self.table_name)
+        if write_to_file:
+            # Save to target destination
+            self.destination.save_relation_as_parquet(
+                ".", self.relation, self.table_name
+            )
+        else:
+            self.relation.show()

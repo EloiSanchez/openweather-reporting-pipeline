@@ -1,0 +1,22 @@
+select
+  clouds__all::int                              as clouds,
+  main__humidity::int                           as humidity,
+  main__pressure::int                           as pressure,
+  source,
+  wind__deg::int                                as degrees,
+  wind__gust::float                             as wind_gusts,
+  wind__speed::float                            as wind_speed,
+  rain__1h::float                               as rain,
+  ingested_at::timestamp                        as ingested_at,
+  ingestion_id,
+  staged_id,
+  staged_at::timestamp                          as staged_at,
+  path                                          as file_path,
+  main__feels_like::float - 273.15              as temperature_feels_like,
+  main__temp::float - 273.15                    as avg_temperature,
+  main__temp_max::float - 273.15                as max_temperature,
+  main__temp_min::float - 273.15                as min_temperature,
+  make_timestamp_ms(dt::bigint * 1000)          as recorded_at,
+  regexp_extract(file_path, '.*/(\w*).json', 1) as location,
+  location || '-' || dt                         as weather_id
+from weather

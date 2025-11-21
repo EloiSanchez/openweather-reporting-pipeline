@@ -71,6 +71,9 @@ def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
             Transformer(con)
             .set_models(
                 [
+                    ("sql/silver/weather_parsed.sql", silver),
+                    ("sql/silver/weather__weather_parsed.sql", silver),
+                    ("sql/silver/air_pollution_parsed.sql", silver),
                     ("sql/silver/weather_rich.sql", silver),
                 ]
             )
@@ -86,5 +89,5 @@ def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
 # if __name__ == "__main__":
 #     req = func.HttpRequest("get", "smth", body=b"")
-#      # stage_openweather(req)
+#     # stage_openweather(req)
 #     transform_openweather(req)

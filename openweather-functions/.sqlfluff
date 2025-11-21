@@ -1,0 +1,67 @@
+[sqlfluff]
+dialect = duckdb
+
+# Line length in stdout when using CLI
+output_line_length = 200
+
+# Same as Python's Black recommendation
+max_line_length = 88
+
+# Indent with 2 spaces
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 2
+
+# Keywords are lowercase and differentiation should come from syntax highlighting
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+# Identifiers are set as lower case. We don't allow alliases with uppercase via ""
+[sqlfluff:rules:capitalisation.identifiers]
+extended_capitalisation_policy = lower
+
+# Functions are called as lower case
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+# Literals are set as lower case
+[sqlfluff:rules:capitalisation.literals]
+capitalisation_policy = lower
+
+# Explicitly declare inner/outer joins if not left, right or cross
+[sqlfluff:rules:ambiguous.join]
+fully_qualify_join_types = inner
+
+# Not allow group by and order by using column number
+[sqlfluff:rules:ambiguous.column_references]
+group_by_and_order_by_style = explicit
+
+# Aliases are discouraged, but if needed, please avoid short aliases
+[sqlfluff:rules:aliasing.length]
+min_alias_length = 5
+
+[sqlfluff:rules:references.keywords]
+ignore_words = no, location
+
+# Not equal style is != instead of <>
+[sqlfluff:rules:convention.not_equal]
+preferred_not_equal_style = c_style
+
+# Consistent usage of double_quotes
+[sqlfluff:rules:convention.quoted_literals]
+preferred_quoted_literal_style = consistent
+
+# MySQL does not allow :: for casting. Use cast over convert
+[sqlfluff:rules:convention.casting_style]
+preferred_type_casting_style = shorthand
+
+# Forbid all subqueries. Prefer CTEs
+[sqlfluff:rules:structure.subquery]
+forbid_subquery_in = both
+
+# Align asses within the same select clause
+[sqlfluff:layout:type:alias_expression]
+spacing_before = align
+align_within = select_clause
+align_scope = bracketed
+
