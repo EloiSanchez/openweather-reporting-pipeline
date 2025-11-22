@@ -66,6 +66,8 @@ def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
         bronze = ADLS(directory="bronze")
         silver = ADLS(directory="silver")
+        gold = ADLS(directory="gold")
+        ml = ADLS(directory="ml")
 
         (
             Transformer(con)
@@ -75,6 +77,8 @@ def transform_openweather(req: func.HttpRequest) -> func.HttpResponse:
                     ("sql/silver/weather__weather_parsed.sql", silver),
                     ("sql/silver/air_pollution_parsed.sql", silver),
                     ("sql/silver/weather_rich.sql", silver),
+                    ("sql/gold/daily_general_report.sql", gold),
+                    ("sql/ml/rain_prediction.sql", ml),
                 ]
             )
             .import_tables_from_dir(bronze)

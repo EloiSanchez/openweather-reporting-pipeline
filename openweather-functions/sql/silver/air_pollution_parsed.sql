@@ -7,7 +7,7 @@ select
   components__pm10::float                       as pm10,
   components__pm2_5::float                      as pm2_5,
   components__so2::float                        as so2,
-  main__aqi,
+  main__aqi::int                                as air_quality_index,
   path                                          as file_path,
   source,
   ingestion_id,
@@ -15,6 +15,6 @@ select
   staged_id,
   staged_at::timestamp                          as staged_at,
   make_timestamp_ms(dt::bigint * 1000)          as recorded_at,
-  file_path || '-' || dt                        as air_pollution_id,
-  regexp_extract(file_path, '.*/(\w*).json', 1) as location
+  regexp_extract(file_path, '.*/(\w*).json', 1) as location,
+  location || '-' || dt                         as air_pollution_id
 from air_pollution
