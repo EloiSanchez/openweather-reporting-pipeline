@@ -2,10 +2,11 @@ from typing import TypedDict, Literal, Any
 
 
 class Location(TypedDict):
-    id: int
+    search_name: str
     name: str
-    lat: int
-    lon: int
+    country_code: str
+    lat: str
+    lon: str
 
 
 class EndpointConfig(TypedDict):

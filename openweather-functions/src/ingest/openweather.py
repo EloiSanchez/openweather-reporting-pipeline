@@ -1,5 +1,4 @@
 import os
-import json
 import datetime
 import requests
 from collections import defaultdict
@@ -83,28 +82,45 @@ class OpenWeather:
 
         return self
 
-    def set_locations(self, locations: Iterable[Location]) -> Self:
-        self.locations = locations
-        return self
+    def set_locations(self, destination: BaseDestination) -> Self:
+        files = destination.read_json_file("locations.json", prepend_context=True)
 
-    def set_locations_path(self, locations_path: str | Path) -> Self:
+        _, file_content = files
 
-        self.locations_path = locations_path
-
-        with open(self.locations_path, "r") as f:
-            locations = json.load(f)
-
-        return self.set_locations(
-            [
-                Location(
-                    id=location["city"]["id"]["$numberLong"],
-                    name=location["city"]["name"],
-                    lat=location["city"]["coord"]["lat"],
-                    lon=location["city"]["coord"]["lon"],
+        self.locations = []
+        fetched_new_data = False
+        for location in file_content:
+            if not ("lat" in location and "long" in location):
+                params: dict[str, Any] = {
+                    "appid": self.base_params["appid"],
+                    "q": f'{location["search_name"]},{location["country_code"]}',
+                    "limit": 1,
+                }
+                response = requests.get(
+                    f"http://api.openweathermap.org/geo/1.0/direct", params=params
                 )
-                for location in locations
-            ]
-        )
+                response.raise_for_status()
+                data: dict[str, str] = response.json()[0]
+                if "local_names" in data:
+                    data.pop("local_names")
+                if "country" in data:
+                    data.pop("country")
+                location.update(data)
+                fetched_new_data = True
+            self.locations.append(
+                Location(
+                    search_name=location["search_name"],
+                    name=location["name"],
+                    country_code=location["country_code"],
+                    lat=location["lat"],
+                    lon=location["lon"],
+                )
+            )
+
+        if fetched_new_data:
+            destination.save_json(self.locations, "locations.json")
+
+        return self
 
     def set_endpoints(
         self, endpoints: Iterable[AvailableEndpoints] | Literal["all"]
@@ -176,7 +192,11 @@ class OpenWeather:
         self, location: Location, data: list[dict[str, Any]], endpoint_name: str
     ):
         for date, batch in self.batch_raw_data(data).items():
-            out_file_path = Path(endpoint_name) / date / (location["name"] + ".json")
+            out_file_path = (
+                Path(endpoint_name)
+                / date
+                / (location["search_name"].replace(" ", "_").lower() + ".json")
+            )
             for destination in self.destinations:
                 destination.save_batch(batch, out_file_path)
 

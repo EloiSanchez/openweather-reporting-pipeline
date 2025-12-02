@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Generator
 
 from azure.identity import DefaultAzureCredential, ClientSecretCredential
-from azure.storage.filedatalake import DataLakeServiceClient
+from azure.storage.filedatalake import DataLakeServiceClient, PathProperties
 
 from duckdb import DuckDBPyConnection, DuckDBPyRelation
 
@@ -68,10 +68,7 @@ class ADLS(BaseDestination):
         batch: list[dict[str, Any]],
         out_file_path: Path,
     ):
-        file_client = self.directory.get_file_client(str(out_file_path))
-
-        with io.BytesIO(json.dumps(batch, indent=4).encode()) as binary_data:
-            file_client.upload_data(binary_data, overwrite=True)
+        self.save_json(batch, out_file_path)
 
     def get_last_date_saved(self) -> dict[str, date]:
         self.print("Getting last date uploaded")
@@ -88,7 +85,24 @@ class ADLS(BaseDestination):
 
         return max_dates or {}
 
-    def iterate_file_data(
+    def read_json_file(
+        self, path: PathProperties | Path | str, prepend_context: bool = False
+    ) -> tuple[str, Any]:
+        if isinstance(path, PathProperties):
+            file_path = path.name
+        elif isinstance(path, Path):
+            file_path = str(path)
+        else:
+            file_path = path
+
+        if prepend_context:
+            file_client = self.directory.get_file_client(file_path)
+        else:
+            file_client = self.filesystem.get_file_client(file_path)
+
+        return file_path, json.loads(file_client.download_file().readall())
+
+    def iterate_data_in_files(
         self, dir: Path | str = "."
     ) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
         dir_client = self.filesystem.get_directory_client(
@@ -97,11 +111,7 @@ class ADLS(BaseDestination):
         for path in dir_client.get_paths():
             if path.name.endswith(".json"):
                 try:
-                    yield path.name, json.loads(
-                        self.filesystem.get_file_client(path.name)
-                        .download_file()
-                        .readall()
-                    )
+                    yield self.read_json_file(path, True)
                 except Exception as e:
                     raise e
 
@@ -157,3 +167,9 @@ class ADLS(BaseDestination):
 
             finally:
                 tmp_file_path.unlink(missing_ok=True)
+
+    def save_json(self, data: list[dict[str, Any]], file_name: str | Path):
+        file_client = self.directory.get_file_client(str(file_name))
+
+        with io.BytesIO(json.dumps(data, indent=2).encode()) as binary_data:
+            file_client.upload_data(binary_data, overwrite=True)

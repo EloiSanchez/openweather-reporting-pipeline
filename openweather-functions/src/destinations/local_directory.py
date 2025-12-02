@@ -31,8 +31,7 @@ class LocalDirectory(BaseDestination):
         if not local_parent.exists():
             local_parent.mkdir(exist_ok=True, parents=True)
 
-        with (self.dir / out_file_path).open("w") as f:
-            json.dump(batch, f, indent=4)
+        self.save_json(batch, self.dir / out_file_path)
 
     def get_last_date_saved(self) -> dict[str, date]:
         self.print(
@@ -40,14 +39,24 @@ class LocalDirectory(BaseDestination):
         )
         return {}
 
-    def iterate_file_data(
+    def read_json_file(
+        self, path: Path | str, prepend_context: bool = False
+    ) -> tuple[str, Any]:
+        path = path if isinstance(path, Path) else Path(path)
+
+        if prepend_context:
+            path = self.dir / path
+
+        path = path.resolve()
+        with open(path, "r") as f:
+            return str(path), json.load(f)
+
+    def iterate_data_in_files(
         self, dir: Path | str = "."
     ) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
         for date_dir in (self.dir / dir).iterdir():
             for data_file in date_dir.iterdir():
-                path = data_file.resolve()
-                with open(path, "r") as f:
-                    yield str(path), json.load(f)
+                yield self.read_json_file(data_file)
 
     def clean_up(self):
         if self.dir.exists():
@@ -87,3 +96,7 @@ class LocalDirectory(BaseDestination):
                         f"Found error getting relation from '{path.name}'"
                     ) from e
                 logging.warning(f"Could not get relation for file '{path.name}'\n{e}")
+
+    def save_json(self, data: list[dict[str, Any]], file_name: str | Path):
+        with open(self.dir / file_name, "w") as f:
+            json.dump(data, f, indent=2)

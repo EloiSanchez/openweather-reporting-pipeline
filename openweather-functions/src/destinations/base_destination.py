@@ -19,7 +19,12 @@ class BaseDestination(ABC):
     def get_last_date_saved(self) -> dict[str, date]: ...
 
     @abstractmethod
-    def iterate_file_data(
+    def read_json_file(
+        self, path, prepend_context: bool = False
+    ) -> tuple[str, Any]: ...
+
+    @abstractmethod
+    def iterate_data_in_files(
         self, dir: Path | str
     ) -> Generator[tuple[str, list[DictRow]], None, None]: ...
 
@@ -32,6 +37,9 @@ class BaseDestination(ABC):
     def iter_dir_as_relations(
         self, con: DuckDBPyConnection, skip_on_error: bool = False
     ) -> Generator[tuple[str, DuckDBPyRelation], None, None]: ...
+
+    @abstractmethod
+    def save_json(self, data: list[dict[str, Any]], file_name: str | Path): ...
 
     def clean_up(self):
         pass
@@ -47,7 +55,7 @@ class BaseDestination(ABC):
             dir = Path(dir)
 
         tables: dict[str, DictTable] = {}
-        for path, data in self.iterate_file_data(dir):
+        for path, data in self.iterate_data_in_files(dir):
             found_tables = self.flatten_dict_rows(
                 data,
                 root_table_name,

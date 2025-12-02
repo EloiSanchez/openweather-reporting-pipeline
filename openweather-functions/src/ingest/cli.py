@@ -13,7 +13,8 @@ from src.utils.types import AvailableEndpoints
 
 
 def ingest_openweather(
-    locations_path: str | Path,
+    locations_dir: str | Path,
+    locations_local: bool,
     start_date: date | datetime | int | str | None,
     end_date: date | datetime | int | str | None,
     upload_to_adls: bool,
@@ -24,7 +25,7 @@ def ingest_openweather(
 ):
     OPENWEATHER_SECRET = os.environ["OPENWEATHER_SECRET_KEY"]
 
-    # Handle destionations
+    # Handle destinations
     destinations: list[BaseDestination] = []
     if upload_to_adls:
         destinations.append(
@@ -76,10 +77,16 @@ def ingest_openweather(
     if start >= end:
         raise ValueError(f"Found start date {start} higher than end date {end} ")
 
+    # Handle locations source
+    if locations_local:
+        locations = LocalDirectory(locations_dir)
+    else:
+        locations = ADLS(directory=locations_dir)
+
     open_weather = (
         OpenWeather(OPENWEATHER_SECRET)
         .set_date_range(start_date=start, end_date=end)
-        .set_locations_path(locations_path)
+        .set_locations(locations)
         .set_endpoints(endpoints)
         .set_destinations(destinations)
     )
@@ -92,7 +99,8 @@ def ingest_openweather(
 if __name__ == "__main__":
     parser = ArgumentParser("OpenWeather Ingestion CLI")
 
-    parser.add_argument("--locations-path", "-lp", required=True)
+    parser.add_argument("--locations-dir", "-ld", required=True)
+    parser.add_argument("--locations-local", "-ll", action="store_true")
     parser.add_argument("--start-date", "-sd")
     parser.add_argument("--end-date", "-ed")
     parser.add_argument("--upload-to-adls", "-adls", action="store_true")
@@ -102,7 +110,8 @@ if __name__ == "__main__":
     parser.add_argument("--ingestion-id", "-id")
     args = parser.parse_args()
 
-    locations_path = args.locations_path
+    locations_dir = args.locations_dir
+    locations_local = args.locations_local
     start_date = args.start_date
     end_date = args.end_date
     upload_to_adls = args.upload_to_adls
@@ -112,7 +121,8 @@ if __name__ == "__main__":
     ingestion_id = args.ingestion_id
 
     ingest_openweather(
-        locations_path,
+        locations_dir,
+        locations_local,
         start_date,
         end_date,
         upload_to_adls,

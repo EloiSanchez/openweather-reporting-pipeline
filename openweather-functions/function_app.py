@@ -17,7 +17,8 @@ def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
         ingest(
-            "ingestion_config/locations.json",
+            locations_dir="locations",
+            locations_local=False,
             start_date=None,
             end_date=None,
             upload_to_adls=True,
