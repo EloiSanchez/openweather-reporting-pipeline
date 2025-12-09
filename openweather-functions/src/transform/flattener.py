@@ -1,3 +1,4 @@
+import logging
 import datetime
 from typing import Self
 
@@ -18,6 +19,7 @@ class Flattener:
         self.column_id: str = "flattener_id"
         self.at_column_name: str
         self.con: DuckDBPyConnection = duckdb_connection
+        self.logger = logging.getLogger()
 
     def set_source(self, source: BaseDestination) -> Self:
         self.source = source
@@ -46,9 +48,11 @@ class Flattener:
 
         for dir in self.directories:
             # Parse tables from directory
+            self.logger.info("Flattening files in dir %s", str(dir))
             tables = self.source.read_tables_from_dir(dir, dir)
 
             for table in tables.values():
+                self.logger.info("Flattening table %s", table.name)
 
                 # Create table
                 column_types = []

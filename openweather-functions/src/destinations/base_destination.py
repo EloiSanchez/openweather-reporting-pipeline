@@ -1,3 +1,4 @@
+import logging
 from abc import ABC, abstractmethod
 from datetime import date
 from pathlib import Path
@@ -10,6 +11,7 @@ from src.utils.dict_table import DictTable
 
 
 class BaseDestination(ABC):
+    logger = logging.getLogger()
     name: str
 
     @abstractmethod
@@ -54,6 +56,9 @@ class BaseDestination(ABC):
         if isinstance(dir, str):
             dir = Path(dir)
 
+        self.logger.info(
+            "Destination %s reading from directory %s", self.name, str(dir)
+        )
         tables: dict[str, DictTable] = {}
         for path, data in self.iterate_data_in_files(dir):
             found_tables = self.flatten_dict_rows(

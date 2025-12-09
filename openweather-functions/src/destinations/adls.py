@@ -99,6 +99,7 @@ class ADLS(BaseDestination):
             file_client = self.directory.get_file_client(file_path)
         else:
             file_client = self.filesystem.get_file_client(file_path)
+        self.logger.info("Downloading file %s", file_path)
 
         return file_path, json.loads(file_client.download_file().readall())
 
@@ -111,8 +112,9 @@ class ADLS(BaseDestination):
         for path in dir_client.get_paths():
             if path.name.endswith(".json"):
                 try:
-                    yield self.read_json_file(path, True)
+                    yield self.read_json_file(path)
                 except Exception as e:
+                    self.logger.error("Error found while reading JSON file %s", path)
                     raise e
 
     def save_relation_as_parquet(
