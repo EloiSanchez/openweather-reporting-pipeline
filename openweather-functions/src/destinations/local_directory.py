@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Generator
 
 from duckdb import DuckDBPyConnection, DuckDBPyRelation
+from polars import DataFrame
 
 from src.destinations.base_destination import BaseDestination
 from src.utils.types import Batch, Any
@@ -74,11 +75,16 @@ class LocalDirectory(BaseDestination):
             pass
 
     def save_relation_as_parquet(
-        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+        self, dir: Path | str, df: DataFrame | DuckDBPyRelation, table_name: str
     ):
-        relation.to_parquet(
-            str(self.dir / dir / (table_name + ".parquet")), overwrite=True
-        )
+        # Different method for different df types
+        fun = "write_parquet" if isinstance(df, DataFrame) else "to_parquet"
+
+        # Add overwrite arg to duckdb df
+        kwargs = {"overwrite": True} if isinstance(df, DuckDBPyRelation) else {}
+
+        # Call method with dynamically generated vars
+        getattr(df, fun)(str(self.dir / dir / (table_name + ".parquet")), **kwargs)
 
     def iter_dir_as_relations(
         self, con: DuckDBPyConnection, skip_on_error: bool = False
@@ -97,6 +103,6 @@ class LocalDirectory(BaseDestination):
                     ) from e
                 logging.warning(f"Could not get relation for file '{path.name}'\n{e}")
 
-    def save_json(self, data: list[dict[str, Any]], file_name: str | Path):
+    def save_json(self, data: list[Any], file_name: str | Path):
         with open(self.dir / file_name, "w") as f:
             json.dump(data, f, indent=2)

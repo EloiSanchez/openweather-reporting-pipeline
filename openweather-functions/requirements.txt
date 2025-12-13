@@ -7,3 +7,4 @@ azure-storage-file-datalake
 azure-identity
 
 duckdb
+polars

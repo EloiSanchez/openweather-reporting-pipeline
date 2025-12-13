@@ -1,11 +1,12 @@
 import logging
 import datetime
+
 from typing import Self
 
 from duckdb import DuckDBPyConnection
+import polars as pl
 
 from src.destinations.base_destination import BaseDestination
-from src.utils.types import ColumnDefinition
 
 
 class Flattener:
@@ -46,38 +47,28 @@ class Flattener:
 
     def flatten(self):
 
+        # def insert_value_in_rel(rel, row, id, at):
+        #     rel.insert(row + [id, at])
+
         for dir in self.directories:
             # Parse tables from directory
             self.logger.info("Flattening files in dir %s", str(dir))
             tables = self.source.read_tables_from_dir(dir, dir)
 
             for table in tables.values():
-                self.logger.info("Flattening table %s", table.name)
-
-                # Create table
-                column_types = []
-                id_column = ColumnDefinition(name=self.column_id, type="VARCHAR")
-                modifed_at_column = ColumnDefinition(
-                    name=self.at_column_name,
-                    type="VARCHAR",
-                )
-                for column_definition in table.get_schema() + [
-                    id_column,
-                    modifed_at_column,
-                ]:
-                    column_types.append(
-                        f"\n{column_definition['name']} {column_definition['type']}"
-                    )
-                column_types_str = ",".join(column_types)
-                query = f"create table {table.name} ({column_types_str});"
-                self.con.sql(query)
+                self.logger.info("Found table %s", table.name)
 
                 # Add data to table
-                rel = self.con.table(table.name)
-                self.con.begin()
                 ingestion_time = datetime.datetime.now().isoformat()
-                for row in table.get_data():
-                    rel.insert(row + [self.id, ingestion_time])
-                self.con.commit()
 
-                self.target.save_relation_as_parquet(".", rel, table.name)
+                df = pl.DataFrame(
+                    table.get_data(),
+                    {x["name"]: x["type"] for x in table.get_schema()},
+                )
+                df = df.with_columns(
+                    pl.lit(self.id).alias(self.column_id),
+                    pl.lit(ingestion_time).alias(self.at_column_name),
+                )
+
+                self.logger.info("Saving as parquet...")
+                self.target.save_relation_as_parquet(".", df, table.name)

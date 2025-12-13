@@ -1,6 +1,8 @@
 import json
 from typing import Any, Generator, Literal, overload
 
+import polars as pl
+
 from src.utils.types import ColumnDefinition, NestedKeyPath, DictRow
 
 
@@ -51,23 +53,15 @@ class DictTable:
             yield new_row
 
     def get_schema(self) -> list[ColumnDefinition]:
-        column_type = "VARCHAR"
+        column_type: pl.DataType = pl.String()
         columns: list[ColumnDefinition] = []
         for keys in self.columns:
-            # for row in self.rows:
-            #     value = self.access_nested_key(row, keys, True)
-            #     if value is None:
-            #         continue
-            #     elif isinstance(value, str):
-            #         break
-            #     elif isinstance(value, (int, float)):
-            #         break
-            #     else:
-            #         raise ValueError(
-            #             f"Found bad type ({type(value)}) inferring type of {row=}"
-            #         )
-            # print(column_type)
+
+            # TODO: This can be extended to identify the datatype of the columns by
+            # iterating over their values, instead of always returning pl.String()
+
             columns.append(ColumnDefinition(name="__".join(keys[1:]), type=column_type))
+
         return columns
 
     @staticmethod

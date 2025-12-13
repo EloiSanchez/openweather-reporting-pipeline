@@ -1,3 +1,4 @@
+from polars import DataType
 from typing import TypedDict, Literal, Any
 
 
@@ -24,7 +25,7 @@ type DictRow = dict[str, Any]
 type Batch = list[DictRow]
 
 type ColumnName = str
-type ColumnType = str
+type ColumnType = DataType
 
 
 class ColumnDefinition(TypedDict):

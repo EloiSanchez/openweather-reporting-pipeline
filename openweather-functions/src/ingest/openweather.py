@@ -1,6 +1,7 @@
 import os
 import datetime
 import requests
+import logging
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable, Literal, Self
@@ -45,6 +46,7 @@ class OpenWeather:
             ),
         }
         self.destinations: list[BaseDestination] = []
+        self.logger = logging.getLogger()
 
     @property
     def base_params(self) -> dict[str, Any]:
@@ -87,7 +89,7 @@ class OpenWeather:
 
         _, file_content = files
 
-        self.locations = []
+        self.locations: list[Location] = []
         fetched_new_data = False
         for location in file_content:
             if not ("lat" in location and "long" in location):
@@ -153,9 +155,16 @@ class OpenWeather:
         if not hasattr(self, "destinations"):
             raise RuntimeError("Output location must be set before fetching data")
 
+        self.logger.info("Starting fetch process for %s location.", len(self.locations))
         try:
-            for location in self.locations:
+            for idx, location in enumerate(self.locations):
                 for endpoint in self.endpoints:
+                    print(idx + 1, location["name"], endpoint)
+                    self.logger.info(
+                        "Fetching endpoint %s for location %s",
+                        endpoint,
+                        location["name"],
+                    )
                     self.fetch_endpoint(endpoint, location)
         except Exception as e:
             raise e

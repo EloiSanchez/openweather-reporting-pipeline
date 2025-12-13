@@ -2,6 +2,7 @@ import logging
 import os
 import io
 import json
+from multiprocessing.pool import ThreadPool
 
 from collections import defaultdict
 from datetime import date
@@ -12,6 +13,7 @@ from azure.identity import DefaultAzureCredential, ClientSecretCredential
 from azure.storage.filedatalake import DataLakeServiceClient, PathProperties
 
 from duckdb import DuckDBPyConnection, DuckDBPyRelation
+from polars import DataFrame
 
 from src.destinations.base_destination import BaseDestination
 
@@ -35,6 +37,9 @@ class ADLS(BaseDestination):
         self.tenant_id = tenant_id
         self.account_name = account_name or os.environ["AZURE_ACCOUNT_NAME"]
         self.container = container or os.environ["AZURE_CONTAINER_NAME"]
+
+        # Set azure logger to warning to avoid excessive logging
+        logging.getLogger("azure").setLevel(logging.WARNING)
 
         if not (self.app_id and self.password and self.tenant_id):
             self.print("Using default envrionment credentials")
@@ -106,19 +111,31 @@ class ADLS(BaseDestination):
     def iterate_data_in_files(
         self, dir: Path | str = "."
     ) -> Generator[tuple[str, list[dict[str, Any]]], None, None]:
+        def download_file(path: PathProperties):
+            try:
+                return self.read_json_file(path)
+            except Exception as e:
+                self.logger.error("Error found while reading JSON file %s", path)
+                raise e
+
         dir_client = self.filesystem.get_directory_client(
             "/".join(p.strip(" /") for p in (self.directory.path_name, str(dir)))
         )
-        for path in dir_client.get_paths():
-            if path.name.endswith(".json"):
-                try:
-                    yield self.read_json_file(path)
-                except Exception as e:
-                    self.logger.error("Error found while reading JSON file %s", path)
-                    raise e
+
+        # Multithread downloads
+        with ThreadPool(processes=8) as pool:
+            for res in pool.imap_unordered(
+                download_file,
+                [
+                    path
+                    for path in dir_client.get_paths()
+                    if path.name.endswith(".json")
+                ],
+            ):
+                yield res
 
     def save_relation_as_parquet(
-        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+        self, dir: Path | str, df: DataFrame | DuckDBPyRelation, table_name: str
     ):
         if isinstance(dir, str):
             dir = Path(dir)
@@ -133,13 +150,18 @@ class ADLS(BaseDestination):
         tmp_file = Path(tmp_file_name)
         try:
             logging.info("Writing tmp parquet file")
-            relation.to_parquet(tmp_file_name)
+
+            if isinstance(df, DuckDBPyRelation):
+                df.to_parquet(tmp_file_name)
+            else:
+                df.write_parquet(tmp_file_name)
+
             logging.info("Uploading tmp file")
             with open(tmp_file, "rb") as f:
                 file_client.upload_data(f, overwrite=True)
         finally:
             logging.info("Cleaning tmp file")
-            tmp_file.unlink()
+            tmp_file.unlink(missing_ok=True)
 
     def iter_dir_as_relations(
         self, con: DuckDBPyConnection, skip_on_error: bool = False
@@ -170,8 +192,17 @@ class ADLS(BaseDestination):
             finally:
                 tmp_file_path.unlink(missing_ok=True)
 
-    def save_json(self, data: list[dict[str, Any]], file_name: str | Path):
+    def save_json(self, data: list[Any], file_name: str | Path):
         file_client = self.directory.get_file_client(str(file_name))
 
         with io.BytesIO(json.dumps(data, indent=2).encode()) as binary_data:
             file_client.upload_data(binary_data, overwrite=True)
+
+    def download_file(self, out_path: str | Path, file_path: str | Path):
+        file_client = self.directory.get_file_client(str(file_path))
+
+        if not file_client.exists():
+            raise RuntimeError(f"'{file_path}' not found.")
+
+        with open(out_path, "wb") as tmp_file:
+            tmp_file.write(file_client.download_file().readall())

@@ -1,0 +1,12 @@
+azure-storage-file-datalake
+azure-identity
+duckdb
+dotenv
+polars
+plotly
+numpy
+nbformat
+scikit-learn
+matplotlib
+imbalanced-learn
+pandas

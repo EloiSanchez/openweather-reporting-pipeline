@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Generator, Any
 
 from duckdb import DuckDBPyConnection, DuckDBPyRelation
+from polars import DataFrame
 
 from src.utils.types import Batch, NestedKeyPath, DictRow
 from src.utils.dict_table import DictTable
@@ -32,7 +33,7 @@ class BaseDestination(ABC):
 
     @abstractmethod
     def save_relation_as_parquet(
-        self, dir: Path | str, relation: DuckDBPyRelation, table_name: str
+        self, dir: Path | str, df: DataFrame | DuckDBPyRelation, table_name: str
     ): ...
 
     @abstractmethod
@@ -41,7 +42,7 @@ class BaseDestination(ABC):
     ) -> Generator[tuple[str, DuckDBPyRelation], None, None]: ...
 
     @abstractmethod
-    def save_json(self, data: list[dict[str, Any]], file_name: str | Path): ...
+    def save_json(self, data: list[Any], file_name: str | Path): ...
 
     def clean_up(self):
         pass
