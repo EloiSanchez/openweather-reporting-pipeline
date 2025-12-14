@@ -152,7 +152,7 @@ python3 -m src.ingest.cli \
     --start-date "2025-12-01 00:00:00" \
     --end-date "2025-12-07 23:59:59"  \
     --upload-to-adls \
-    --out-directory popo
+    --out-directory raw
 ```
 
 
@@ -213,7 +213,7 @@ silver = LocalDirectory(dir="data/silver")
     .set_models(
         [
             ("sql/silver/weather_recordings_agg.sql", silver),
-            # Other models that we would like to create
+            # Put here other models that you would like to create
         ]
     )
     .import_tables_from_dir(bronze) # Make available the tables in this directory the in-memory database
