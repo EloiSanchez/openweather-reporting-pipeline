@@ -32,7 +32,7 @@ class LocalDirectory(BaseDestination):
         if not local_parent.exists():
             local_parent.mkdir(exist_ok=True, parents=True)
 
-        self.save_json(batch, self.dir / out_file_path)
+        self.save_json(batch, out_file_path)
 
     def get_last_date_saved(self) -> dict[str, date]:
         self.print(

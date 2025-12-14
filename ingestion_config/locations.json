@@ -1,0 +1,121 @@
+[
+  {
+    "search_name": "Sevilla",
+    "name": "Seville",
+    "country_code": "ES",
+    "lat": 37.3886303,
+    "lon": -5.9953403
+  },
+  {
+    "search_name": "Zaragoza",
+    "name": "Zaragoza",
+    "country_code": "ES",
+    "lat": 41.6521342,
+    "lon": -0.8809428
+  },
+  {
+    "search_name": "Oviedo",
+    "name": "Oviedo",
+    "country_code": "ES",
+    "lat": 43.3604218,
+    "lon": -5.8450534
+  },
+  {
+    "search_name": "Palma",
+    "name": "Palma",
+    "country_code": "ES",
+    "lat": 39.5695818,
+    "lon": 2.6500745
+  },
+  {
+    "search_name": "Santa Cruz de Tenerife",
+    "name": "Santa Cruz de Tenerife",
+    "country_code": "ES",
+    "lat": 28.469648,
+    "lon": -16.2540884
+  },
+  {
+    "search_name": "Santander",
+    "name": "Santander",
+    "country_code": "ES",
+    "lat": 43.4620412,
+    "lon": -3.8099719
+  },
+  {
+    "search_name": "Toledo",
+    "name": "Toledo",
+    "country_code": "ES",
+    "lat": 39.8560679,
+    "lon": -4.0239568
+  },
+  {
+    "search_name": "Valladolid",
+    "name": "Valladolid",
+    "country_code": "ES",
+    "lat": 41.6521328,
+    "lon": -4.728562
+  },
+  {
+    "search_name": "Barcelona",
+    "name": "Barcelona",
+    "country_code": "ES",
+    "lat": 41.3828939,
+    "lon": 2.1774322
+  },
+  {
+    "search_name": "Merida",
+    "name": "Merida",
+    "country_code": "ES",
+    "lat": 38.9174665,
+    "lon": -6.3443977
+  },
+  {
+    "search_name": "Santiago de Compostela",
+    "name": "Santiago de Compostela",
+    "country_code": "ES",
+    "lat": 42.8804219,
+    "lon": -8.5458608
+  },
+  {
+    "search_name": "Logrono",
+    "name": "Logro\u00f1o",
+    "country_code": "ES",
+    "lat": 42.4661196,
+    "lon": -2.4396676
+  },
+  {
+    "search_name": "Madrid",
+    "name": "Madrid",
+    "country_code": "ES",
+    "lat": 40.4167047,
+    "lon": -3.7035825
+  },
+  {
+    "search_name": "Murcia",
+    "name": "Murcia",
+    "country_code": "ES",
+    "lat": 37.9923795,
+    "lon": -1.1305431
+  },
+  {
+    "search_name": "Pamplona",
+    "name": "Pamplona",
+    "country_code": "ES",
+    "lat": 42.8182536,
+    "lon": -1.6440304
+  },
+  {
+    "search_name": "Valencia",
+    "name": "Valencia",
+    "country_code": "ES",
+    "lat": 39.4697065,
+    "lon": -0.3763353
+  },
+  {
+    "search_name": "Vitoria-Gasteiz",
+    "name": "Vitoria-Gasteiz",
+    "country_code": "ES",
+    "lat": 42.8465088,
+    "lon": -2.6724025
+  }
+]

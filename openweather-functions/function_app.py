@@ -43,9 +43,8 @@ def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 @app.route(route="stage-openweather")
 def stage_openweather(req: func.HttpRequest) -> func.HttpResponse:
     try:
-        con = duckdb.connect()
         (
-            Flattener(con)
+            Flattener()
             .set_source(ADLS(directory="raw"))
             .set_target(ADLS(directory="bronze"))
             .set_directories_to_parse("weather", "air_pollution")

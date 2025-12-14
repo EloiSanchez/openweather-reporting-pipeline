@@ -3,7 +3,6 @@ import datetime
 
 from typing import Self
 
-from duckdb import DuckDBPyConnection
 import polars as pl
 
 from src.destinations.base_destination import BaseDestination
@@ -11,7 +10,7 @@ from src.destinations.base_destination import BaseDestination
 
 class Flattener:
 
-    def __init__(self, duckdb_connection: DuckDBPyConnection) -> None:
+    def __init__(self) -> None:
         self.name: str = "flattener"
         self.source: BaseDestination
         self.directories: list[str]
@@ -19,7 +18,6 @@ class Flattener:
         self.id: str = datetime.datetime.now().isoformat()
         self.column_id: str = "flattener_id"
         self.at_column_name: str
-        self.con: DuckDBPyConnection = duckdb_connection
         self.logger = logging.getLogger()
 
     def set_source(self, source: BaseDestination) -> Self:
@@ -46,9 +44,6 @@ class Flattener:
         return self
 
     def flatten(self):
-
-        # def insert_value_in_rel(rel, row, id, at):
-        #     rel.insert(row + [id, at])
 
         for dir in self.directories:
             # Parse tables from directory
