@@ -15,6 +15,8 @@ The code is structured in the following way
 │ # └─ Figures and diagrams
 ├── notebooks/
 │ # └─ One-time execution ML/Analysis notebooks
+├── ingestion_config/
+│ # └─ Includes example of locations file required for ingestion
 └── openweather-functions/
     ├── function_app.py # <-- Starting point of Azure Functions executions
     ├── ingestion_config/
