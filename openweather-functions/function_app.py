@@ -4,11 +4,9 @@ import azure.functions as func
 import duckdb
 
 from src.destinations.adls import ADLS
-from src.destinations.local_directory import LocalDirectory
 from src.ingest.openweather import OpenWeather
 from src.transform.flattener import Flattener
 from src.transform.transformer import Transformer
-from src.utils.timestamp import Timestamp
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)

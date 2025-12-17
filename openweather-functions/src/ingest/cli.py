@@ -1,7 +1,4 @@
-import os
-from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Iterable, Literal
 from argparse import ArgumentParser
 
 from src.ingest.openweather import OpenWeather
@@ -9,7 +6,6 @@ from src.destinations.adls import ADLS
 from src.destinations.local_directory import LocalDirectory
 from src.destinations.base_destination import BaseDestination
 from src.utils.timestamp import Timestamp
-from src.utils.types import AvailableEndpoints
 
 
 if __name__ == "__main__":
