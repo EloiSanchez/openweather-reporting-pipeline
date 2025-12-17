@@ -18,7 +18,7 @@ from src.utils.types import (
 
 class OpenWeather:
 
-    def __init__(self, secret: str | None) -> None:
+    def __init__(self, secret: str | None = None) -> None:
         self.name = "OpenWeather"
         self.ingestion_id = self.name + "-" + datetime.datetime.now().isoformat()
         self.secret: str = (
@@ -71,21 +71,55 @@ class OpenWeather:
         return params
 
     def set_date_range(
-        self,
-        start_date: Timestamp,
-        end_date: Timestamp = Timestamp(
-            (datetime.datetime.today() - datetime.timedelta(days=1)).replace(
-                hour=23, minute=59
-            )
-        ),
+        self, start_date: Timestamp | None, end_date: Timestamp | None = None
     ) -> Self:
+
+        # Handle start date
+        if start_date is None:
+            if not self.destinations:
+                raise ValueError(
+                    "Start date cannot be inferred if destinations are not set"
+                )
+
+            max_dates: list[datetime.date] = []
+            for destination in self.destinations:
+                max_dates.extend(
+                    [
+                        min_date
+                        for min_date in destination.get_last_date_saved().values()
+                    ]
+                )
+
+            if max_dates:
+                start_date = Timestamp(min(max_dates) + datetime.timedelta(days=1))
+            else:
+                raise ValueError(
+                    "`start_date` was not provided and previous data could not be "
+                    f"found in destinations ({self.destinations})"
+                )
+
+        # Handle end date
+        if end_date is None:
+            yesterday = datetime.date.today() - datetime.timedelta(days=1)
+            end_date = Timestamp(
+                datetime.datetime(
+                    yesterday.year, yesterday.month, yesterday.day, 23, 59, 59
+                )
+            )
+
+        if start_date >= end_date:
+            raise ValueError(
+                f"Start date ({start_date}) cannot be greater than end "
+                f"date ({end_date})"
+            )
+
         self.start_date = start_date
         self.end_date = end_date
 
         return self
 
-    def set_locations(self, destination: BaseDestination) -> Self:
-        files = destination.read_json_file("locations.json", prepend_context=True)
+    def set_location_directory(self, directory: BaseDestination) -> Self:
+        files = directory.read_json_file("locations.json", prepend_context=True)
 
         _, file_content = files
 
@@ -94,7 +128,7 @@ class OpenWeather:
         for location in file_content:
             if not ("lat" in location and "long" in location):
                 params: dict[str, Any] = {
-                    "appid": self.base_params["appid"],
+                    "appid": self.secret,
                     "q": f'{location["search_name"]},{location["country_code"]}',
                     "limit": 1,
                 }
@@ -120,7 +154,7 @@ class OpenWeather:
             )
 
         if fetched_new_data:
-            destination.save_json(self.locations, "locations.json")
+            directory.save_json(self.locations, "locations.json")
 
         return self
 
@@ -140,8 +174,10 @@ class OpenWeather:
             self.raw_dir = raw_dir_path
         return self
 
-    def set_ingestion_id(self, id: str):
-        self.ingestion_id = id
+    def set_ingestion_id(self, id: str | None):
+        if id:
+            self.ingestion_id = id
+        return self
 
     def set_destinations(self, destinations: list[BaseDestination]) -> Self:
         self.destinations = destinations
@@ -157,13 +193,15 @@ class OpenWeather:
 
         self.logger.info("Starting fetch process for %s location.", len(self.locations))
         try:
+            num_locs = len(self.locations)
             for idx, location in enumerate(self.locations):
                 for endpoint in self.endpoints:
-                    print(idx + 1, location["name"], endpoint)
                     self.logger.info(
-                        "Fetching endpoint %s for location %s",
+                        "Fetching endpoint %s for location %s (%s/%s)",
                         endpoint,
                         location["name"],
+                        idx + 1,
+                        num_locs,
                     )
                     self.fetch_endpoint(endpoint, location)
         except Exception as e:

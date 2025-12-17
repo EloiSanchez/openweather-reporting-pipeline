@@ -13,13 +13,13 @@ from src.utils.types import Batch, Any
 
 class LocalDirectory(BaseDestination):
 
-    def __init__(self, dir: str | Path) -> None:
+    def __init__(self, directory: str | Path) -> None:
         super().__init__()
 
-        if isinstance(dir, str):
-            dir = Path(dir)
+        if isinstance(directory, str):
+            directory = Path(directory)
 
-        self.dir: Path = dir
+        self.dir: Path = directory
         self.name = f"Local Directory ({self.dir})"
 
         if not self.dir.exists():

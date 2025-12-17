@@ -4,9 +4,11 @@ import azure.functions as func
 import duckdb
 
 from src.destinations.adls import ADLS
-from src.ingest.cli import ingest_openweather as ingest
+from src.destinations.local_directory import LocalDirectory
+from src.ingest.openweather import OpenWeather
 from src.transform.flattener import Flattener
 from src.transform.transformer import Transformer
+from src.utils.timestamp import Timestamp
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
@@ -16,16 +18,14 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 def ingest_openweather(req: func.HttpRequest) -> func.HttpResponse:
 
     try:
-        ingest(
-            locations_dir="locations",
-            locations_local=False,
-            start_date=None,
-            end_date=None,
-            upload_to_adls=True,
-            save_local=False,
-            endpoints="all",
-            out_dir="raw",
-            ingestion_id=req.headers.get("run_id"),
+        (
+            OpenWeather()
+            .set_location_directory(ADLS(directory="locations"))
+            .set_destinations([ADLS(directory="raw")])
+            .set_endpoints("all")
+            .set_date_range(start_date=None, end_date=None)
+            .set_ingestion_id(req.headers.get("run_id"))
+            .fetch()
         )
     except Exception as e:
         logging.exception("There has been an error ingesting data from OpenWeather")
