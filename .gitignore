@@ -1,5 +1,7 @@
-.*venv/
+.*env/
 .env*
+
+*.bkp
 
 __pycache__
 
