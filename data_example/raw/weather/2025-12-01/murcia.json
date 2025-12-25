@@ -1,0 +1,714 @@
+[
+  {
+    "dt": 1764543600,
+    "main": {
+      "temp": 285.81,
+      "feels_like": 285.06,
+      "pressure": 1018,
+      "humidity": 74,
+      "temp_min": 284.61,
+      "temp_max": 286.33
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 298,
+      "gust": 2.68
+    },
+    "clouds": {
+      "all": 100
+    },
+    "weather": [
+      {
+        "id": 804,
+        "main": "Clouds",
+        "description": "overcast clouds",
+        "icon": "04n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715544"
+  },
+  {
+    "dt": 1764547200,
+    "main": {
+      "temp": 284.89,
+      "feels_like": 284.23,
+      "pressure": 1018,
+      "humidity": 81,
+      "temp_min": 284.01,
+      "temp_max": 285.13
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 278,
+      "gust": 1.79
+    },
+    "clouds": {
+      "all": 100
+    },
+    "weather": [
+      {
+        "id": 804,
+        "main": "Clouds",
+        "description": "overcast clouds",
+        "icon": "04n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715598"
+  },
+  {
+    "dt": 1764550800,
+    "main": {
+      "temp": 284.44,
+      "feels_like": 283.79,
+      "pressure": 1018,
+      "humidity": 83,
+      "temp_min": 283.46,
+      "temp_max": 284.66
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 225,
+      "gust": 1.79
+    },
+    "clouds": {
+      "all": 77
+    },
+    "weather": [
+      {
+        "id": 803,
+        "main": "Clouds",
+        "description": "broken clouds",
+        "icon": "04n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715619"
+  },
+  {
+    "dt": 1764554400,
+    "main": {
+      "temp": 283.68,
+      "feels_like": 283.01,
+      "pressure": 1018,
+      "humidity": 85,
+      "temp_min": 281.8,
+      "temp_max": 283.91
+    },
+    "wind": {
+      "speed": 1.34,
+      "deg": 254,
+      "gust": 3.13
+    },
+    "clouds": {
+      "all": 40
+    },
+    "weather": [
+      {
+        "id": 802,
+        "main": "Clouds",
+        "description": "scattered clouds",
+        "icon": "03n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715636"
+  },
+  {
+    "dt": 1764558000,
+    "main": {
+      "temp": 282.87,
+      "feels_like": 282.66,
+      "pressure": 1018,
+      "humidity": 86,
+      "temp_min": 281.8,
+      "temp_max": 282.99
+    },
+    "wind": {
+      "speed": 1.34,
+      "deg": 267,
+      "gust": 1.79
+    },
+    "clouds": {
+      "all": 27
+    },
+    "weather": [
+      {
+        "id": 802,
+        "main": "Clouds",
+        "description": "scattered clouds",
+        "icon": "03n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715651"
+  },
+  {
+    "dt": 1764561600,
+    "main": {
+      "temp": 282.33,
+      "feels_like": 282.33,
+      "pressure": 1018,
+      "humidity": 87,
+      "temp_min": 281.24,
+      "temp_max": 282.94
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 268,
+      "gust": 2.68
+    },
+    "clouds": {
+      "all": 21
+    },
+    "weather": [
+      {
+        "id": 801,
+        "main": "Clouds",
+        "description": "few clouds",
+        "icon": "02n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715667"
+  },
+  {
+    "dt": 1764565200,
+    "main": {
+      "temp": 282.32,
+      "feels_like": 282.32,
+      "pressure": 1018,
+      "humidity": 86,
+      "temp_min": 281.23,
+      "temp_max": 282.94
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 264,
+      "gust": 3.58
+    },
+    "clouds": {
+      "all": 17
+    },
+    "weather": [
+      {
+        "id": 801,
+        "main": "Clouds",
+        "description": "few clouds",
+        "icon": "02n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715682"
+  },
+  {
+    "dt": 1764568800,
+    "main": {
+      "temp": 282.28,
+      "feels_like": 282.28,
+      "pressure": 1019,
+      "humidity": 85,
+      "temp_min": 281.73,
+      "temp_max": 283.47
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 248,
+      "gust": 1.79
+    },
+    "clouds": {
+      "all": 14
+    },
+    "weather": [
+      {
+        "id": 801,
+        "main": "Clouds",
+        "description": "few clouds",
+        "icon": "02n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715697"
+  },
+  {
+    "dt": 1764572400,
+    "main": {
+      "temp": 282.11,
+      "feels_like": 281.8,
+      "pressure": 1020,
+      "humidity": 82,
+      "temp_min": 280.68,
+      "temp_max": 282.79
+    },
+    "wind": {
+      "speed": 1.34,
+      "deg": 249,
+      "gust": 1.79
+    },
+    "clouds": {
+      "all": 40
+    },
+    "weather": [
+      {
+        "id": 802,
+        "main": "Clouds",
+        "description": "scattered clouds",
+        "icon": "03d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715711"
+  },
+  {
+    "dt": 1764576000,
+    "main": {
+      "temp": 283.49,
+      "feels_like": 282.51,
+      "pressure": 1020,
+      "humidity": 74,
+      "temp_min": 282.84,
+      "temp_max": 285.13
+    },
+    "wind": {
+      "speed": 2.68,
+      "deg": 277,
+      "gust": 4.02
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715726"
+  },
+  {
+    "dt": 1764579600,
+    "main": {
+      "temp": 285.48,
+      "feels_like": 284.6,
+      "pressure": 1020,
+      "humidity": 70,
+      "temp_min": 284.51,
+      "temp_max": 286.24
+    },
+    "wind": {
+      "speed": 1.79,
+      "deg": 287,
+      "gust": 4.47
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715741"
+  },
+  {
+    "dt": 1764583200,
+    "main": {
+      "temp": 287.23,
+      "feels_like": 286.29,
+      "pressure": 1021,
+      "humidity": 61,
+      "temp_min": 286.18,
+      "temp_max": 287.79
+    },
+    "wind": {
+      "speed": 3.6,
+      "deg": 300
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715756"
+  },
+  {
+    "dt": 1764586800,
+    "main": {
+      "temp": 288.71,
+      "feels_like": 287.78,
+      "pressure": 1020,
+      "humidity": 56,
+      "temp_min": 287.84,
+      "temp_max": 289.34
+    },
+    "wind": {
+      "speed": 2.57,
+      "deg": 300
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715771"
+  },
+  {
+    "dt": 1764590400,
+    "main": {
+      "temp": 290.13,
+      "feels_like": 289.24,
+      "pressure": 1019,
+      "humidity": 52,
+      "temp_min": 288.96,
+      "temp_max": 291.01
+    },
+    "wind": {
+      "speed": 1.79,
+      "deg": 284,
+      "gust": 4.92
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715785"
+  },
+  {
+    "dt": 1764594000,
+    "main": {
+      "temp": 290.44,
+      "feels_like": 289.56,
+      "pressure": 1019,
+      "humidity": 51,
+      "temp_min": 290.07,
+      "temp_max": 291.24
+    },
+    "wind": {
+      "speed": 2.06,
+      "deg": 30
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715799"
+  },
+  {
+    "dt": 1764597600,
+    "main": {
+      "temp": 291.3,
+      "feels_like": 290.45,
+      "pressure": 1018,
+      "humidity": 49,
+      "temp_min": 290.62,
+      "temp_max": 292.91
+    },
+    "wind": {
+      "speed": 1.54,
+      "deg": 100
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715814"
+  },
+  {
+    "dt": 1764601200,
+    "main": {
+      "temp": 291.66,
+      "feels_like": 290.82,
+      "pressure": 1018,
+      "humidity": 48,
+      "temp_min": 290.62,
+      "temp_max": 292.34
+    },
+    "wind": {
+      "speed": 1.03,
+      "deg": 0
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715828"
+  },
+  {
+    "dt": 1764604800,
+    "main": {
+      "temp": 291.41,
+      "feels_like": 290.52,
+      "pressure": 1018,
+      "humidity": 47,
+      "temp_min": 290.62,
+      "temp_max": 291.68
+    },
+    "wind": {
+      "speed": 0.89,
+      "deg": 158,
+      "gust": 0.89
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01d"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715842"
+  },
+  {
+    "dt": 1764608400,
+    "main": {
+      "temp": 289.12,
+      "feels_like": 288.29,
+      "pressure": 1018,
+      "humidity": 58,
+      "temp_min": 287.9,
+      "temp_max": 289.34
+    },
+    "wind": {
+      "speed": 2.06,
+      "deg": 80
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715857"
+  },
+  {
+    "dt": 1764612000,
+    "main": {
+      "temp": 287.7,
+      "feels_like": 286.88,
+      "pressure": 1018,
+      "humidity": 64,
+      "temp_min": 286.24,
+      "temp_max": 288.35
+    },
+    "wind": {
+      "speed": 3.09,
+      "deg": 160
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715871"
+  },
+  {
+    "dt": 1764615600,
+    "main": {
+      "temp": 286.39,
+      "feels_like": 285.55,
+      "pressure": 1019,
+      "humidity": 68,
+      "temp_min": 285.24,
+      "temp_max": 286.88
+    },
+    "wind": {
+      "speed": 1.03,
+      "deg": 0
+    },
+    "clouds": {
+      "all": 0
+    },
+    "weather": [
+      {
+        "id": 800,
+        "main": "Clear",
+        "description": "clear sky",
+        "icon": "01n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715886"
+  },
+  {
+    "dt": 1764619200,
+    "main": {
+      "temp": 284.67,
+      "feels_like": 283.78,
+      "pressure": 1019,
+      "humidity": 73,
+      "temp_min": 283.46,
+      "temp_max": 285.22
+    },
+    "wind": {
+      "speed": 1.44,
+      "deg": 180,
+      "gust": 1.39
+    },
+    "clouds": {
+      "all": 15
+    },
+    "weather": [
+      {
+        "id": 801,
+        "main": "Clouds",
+        "description": "few clouds",
+        "icon": "02n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715900"
+  },
+  {
+    "dt": 1764622800,
+    "main": {
+      "temp": 284.26,
+      "feels_like": 283.44,
+      "pressure": 1019,
+      "humidity": 77,
+      "temp_min": 282.34,
+      "temp_max": 285.22
+    },
+    "wind": {
+      "speed": 1.48,
+      "deg": 197,
+      "gust": 1.36
+    },
+    "clouds": {
+      "all": 29
+    },
+    "weather": [
+      {
+        "id": 802,
+        "main": "Clouds",
+        "description": "scattered clouds",
+        "icon": "03n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715914"
+  },
+  {
+    "dt": 1764626400,
+    "main": {
+      "temp": 283.45,
+      "feels_like": 282.55,
+      "pressure": 1019,
+      "humidity": 77,
+      "temp_min": 281.79,
+      "temp_max": 284.46
+    },
+    "wind": {
+      "speed": 0.45,
+      "deg": 23,
+      "gust": 0.89
+    },
+    "clouds": {
+      "all": 37
+    },
+    "weather": [
+      {
+        "id": 802,
+        "main": "Clouds",
+        "description": "scattered clouds",
+        "icon": "03n"
+      }
+    ],
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:34.715928"
+  }
+]

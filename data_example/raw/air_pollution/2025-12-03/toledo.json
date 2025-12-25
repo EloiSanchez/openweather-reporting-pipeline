@@ -1,0 +1,458 @@
+[
+  {
+    "main": {
+      "aqi": 1
+    },
+    "components": {
+      "co": 119.14,
+      "no": 0,
+      "no2": 1.48,
+      "o3": 56.62,
+      "so2": 0.1,
+      "pm2_5": 1.01,
+      "pm10": 1.93,
+      "nh3": 0.32
+    },
+    "dt": 1764716400,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923084"
+  },
+  {
+    "main": {
+      "aqi": 1
+    },
+    "components": {
+      "co": 117.52,
+      "no": 0,
+      "no2": 1.35,
+      "o3": 58.77,
+      "so2": 0.09,
+      "pm2_5": 0.86,
+      "pm10": 1.46,
+      "nh3": 0.26
+    },
+    "dt": 1764720000,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923093"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 114.62,
+      "no": 0,
+      "no2": 1.16,
+      "o3": 63.72,
+      "so2": 0.09,
+      "pm2_5": 0.64,
+      "pm10": 1.01,
+      "nh3": 0.2
+    },
+    "dt": 1764723600,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923102"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 112.06,
+      "no": 0,
+      "no2": 1.09,
+      "o3": 66.13,
+      "so2": 0.08,
+      "pm2_5": 0.56,
+      "pm10": 0.79,
+      "nh3": 0.18
+    },
+    "dt": 1764727200,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923112"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 110.09,
+      "no": 0,
+      "no2": 1.11,
+      "o3": 66.53,
+      "so2": 0.08,
+      "pm2_5": 0.54,
+      "pm10": 0.71,
+      "nh3": 0.18
+    },
+    "dt": 1764730800,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923121"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.86,
+      "no": 0,
+      "no2": 1.17,
+      "o3": 66.57,
+      "so2": 0.08,
+      "pm2_5": 0.51,
+      "pm10": 0.79,
+      "nh3": 0.2
+    },
+    "dt": 1764734400,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923130"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.32,
+      "no": 0,
+      "no2": 1.19,
+      "o3": 67.21,
+      "so2": 0.1,
+      "pm2_5": 0.5,
+      "pm10": 0.94,
+      "nh3": 0.22
+    },
+    "dt": 1764738000,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923139"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.45,
+      "no": 0,
+      "no2": 1.16,
+      "o3": 68.29,
+      "so2": 0.11,
+      "pm2_5": 0.5,
+      "pm10": 0.99,
+      "nh3": 0.23
+    },
+    "dt": 1764741600,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923148"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.17,
+      "no": 0,
+      "no2": 1.14,
+      "o3": 68.52,
+      "so2": 0.12,
+      "pm2_5": 0.5,
+      "pm10": 0.99,
+      "nh3": 0.23
+    },
+    "dt": 1764745200,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923164"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.75,
+      "no": 0,
+      "no2": 1.16,
+      "o3": 68.38,
+      "so2": 0.13,
+      "pm2_5": 0.5,
+      "pm10": 1.03,
+      "nh3": 0.25
+    },
+    "dt": 1764748800,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923174"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 109.43,
+      "no": 0.04,
+      "no2": 1.28,
+      "o3": 68.45,
+      "so2": 0.14,
+      "pm2_5": 0.5,
+      "pm10": 1.09,
+      "nh3": 0.27
+    },
+    "dt": 1764752400,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923184"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 109.16,
+      "no": 0.14,
+      "no2": 1.2,
+      "o3": 68.43,
+      "so2": 0.16,
+      "pm2_5": 0.5,
+      "pm10": 1.13,
+      "nh3": 0.28
+    },
+    "dt": 1764756000,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923193"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.54,
+      "no": 0.22,
+      "no2": 1.05,
+      "o3": 69.18,
+      "so2": 0.19,
+      "pm2_5": 0.5,
+      "pm10": 1.16,
+      "nh3": 0.33
+    },
+    "dt": 1764759600,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923203"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 107.54,
+      "no": 0.24,
+      "no2": 0.88,
+      "o3": 70.96,
+      "so2": 0.22,
+      "pm2_5": 0.5,
+      "pm10": 1.25,
+      "nh3": 0.4
+    },
+    "dt": 1764763200,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923212"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 107.75,
+      "no": 0.2,
+      "no2": 0.72,
+      "o3": 75.48,
+      "so2": 0.24,
+      "pm2_5": 0.58,
+      "pm10": 1.38,
+      "nh3": 0.41
+    },
+    "dt": 1764766800,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923221"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 106.78,
+      "no": 0.15,
+      "no2": 0.66,
+      "o3": 77.76,
+      "so2": 0.25,
+      "pm2_5": 0.69,
+      "pm10": 1.57,
+      "nh3": 0.44
+    },
+    "dt": 1764770400,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923230"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 105.79,
+      "no": 0.11,
+      "no2": 0.67,
+      "o3": 79.18,
+      "so2": 0.26,
+      "pm2_5": 0.79,
+      "pm10": 1.76,
+      "nh3": 0.47
+    },
+    "dt": 1764774000,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923239"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 106.12,
+      "no": 0.07,
+      "no2": 0.79,
+      "o3": 79.25,
+      "so2": 0.23,
+      "pm2_5": 0.86,
+      "pm10": 1.94,
+      "nh3": 0.57
+    },
+    "dt": 1764777600,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923249"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 107.08,
+      "no": 0.01,
+      "no2": 1.02,
+      "o3": 77.6,
+      "so2": 0.17,
+      "pm2_5": 0.92,
+      "pm10": 2.11,
+      "nh3": 0.69
+    },
+    "dt": 1764781200,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923258"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.34,
+      "no": 0,
+      "no2": 1.14,
+      "o3": 76.72,
+      "so2": 0.14,
+      "pm2_5": 0.96,
+      "pm10": 2.28,
+      "nh3": 0.67
+    },
+    "dt": 1764784800,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923266"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 108.53,
+      "no": 0,
+      "no2": 1.22,
+      "o3": 75.38,
+      "so2": 0.12,
+      "pm2_5": 0.99,
+      "pm10": 2.41,
+      "nh3": 0.57
+    },
+    "dt": 1764788400,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923275"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 109.27,
+      "no": 0,
+      "no2": 1.31,
+      "o3": 74.42,
+      "so2": 0.11,
+      "pm2_5": 1.02,
+      "pm10": 2.55,
+      "nh3": 0.52
+    },
+    "dt": 1764792000,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923283"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 109.83,
+      "no": 0,
+      "no2": 1.41,
+      "o3": 73.03,
+      "so2": 0.11,
+      "pm2_5": 1.05,
+      "pm10": 2.69,
+      "nh3": 0.48
+    },
+    "dt": 1764795600,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923292"
+  },
+  {
+    "main": {
+      "aqi": 2
+    },
+    "components": {
+      "co": 109.87,
+      "no": 0,
+      "no2": 1.54,
+      "o3": 70.56,
+      "so2": 0.11,
+      "pm2_5": 1.08,
+      "pm10": 2.83,
+      "nh3": 0.44
+    },
+    "dt": 1764799200,
+    "source": "OpenWeather",
+    "ingestion_id": "OpenWeather-2025-12-25T12:45:06.741489",
+    "ingested_at": "2025-12-25T12:45:21.923300"
+  }
+]
