@@ -11,6 +11,8 @@ The code is structured in the following way
 
 ```shell
 ./
+├── example_data/
+│ # └─ Example of data obtained from running the pipeline from 2025-12-01 to 2025-12-07
 ├── media/
 │ # └─ Figures and diagrams
 ├── notebooks/
@@ -18,28 +20,23 @@ The code is structured in the following way
 ├── ingestion_config/
 │ # └─ Includes example of locations file required for ingestion
 └── openweather-functions/
-    ├── function_app.py # <-- Starting point of Azure Functions executions
-    ├── ingestion_config/
-    │ # └─ Config files required for ingestion, i.e. locations to fetch
-    ├── sql/
-    │   ├── gold/
-    │   ├── ml/
-    │   └── silver/
-    │ # └─ SQL files used for database transformations in the transform step
-    └── src/
-        ├── destinations/
+    ├── function_app.py # <-- Starting point of Azure Functions executions
+    ├── sql/
+    │ # └─ SQL files used for database transformations in the transformation step
+    └── src/
+        ├── destinations/
         │ # └─ Objects that interact with file storing destinations, i.e. ADLS
-        ├── ingest/
-        │ # └─ Scripts for data fetching and saving into a destination
-        ├── transform/
-        │ # └─ Scripts for both initially parsing data and further transforming it
-        └── utils/
+        ├── ingest/
+        │ # └─ Module for data fetching and saving into a destination
+        ├── transform/
+        │ # └─ Modules for staging/parsing data and further transforming it
+        └── utils/
           # └─ Helper tools used in all other Python scripts and modules
 ```
 
 ## Azure Functions
 
-Even though the code can technically be used fully locally (since there is an implementation for a `LocalDirectory` destination), the `openweather-functions` directory is structured to be compatible with Azure functions.
+Even though the codecan technically be used fully locally (since there is an implementation for a `LocalDirectory` destination), the `openweather-functions` directory is structured to be compatible with Azure functions.
 
 ### Requirements
 
@@ -157,6 +154,28 @@ python3 -m src.ingest.cli \
     --out-directory raw
 ```
 
+## Ingestion API
+
+The above mentioned ingestion CLI is actually a simple wrapper to the `OpenWeather` class. An example of usage of the class' API is shown here.
+
+```python
+# ./openweather-functions/ingestion_example.py
+
+from src.ingest.openweather import OpenWeather
+from src.destinations.local_directory import LocalDirectory
+
+(
+    OpenWeather()
+    .set_location_directory(LocalDirectory(directory="locations"))
+    .set_destinations([LocalDirectory(directory="raw")])
+    .set_endpoints("all")
+    .set_date_range(start_date="2025-12-01 00:00:00", end_date="2025-12-07 00:00:00")
+    .set_ingestion_id(req.headers.get("run_id"))
+    .fetch()
+)
+```
+
+Changing the `LocalDirectory` class to `ADLS` will save the data in the specified ADLS directory specified by the exported credentials from previous steps, instead of working locally.
 
 ## Staging API
 
@@ -171,8 +190,8 @@ from src.destinations.local_directory import LocalDirectory
 
 (
     Flattener()
-    .set_source(LocalDirectory(dir="data/raw"))
-    .set_target(LocalDirectory(dir="data/bronze"))
+    .set_source(LocalDirectory(directory="data/raw"))
+    .set_target(LocalDirectory(directory="data/bronze"))
     .set_directories_to_parse("weather", "air_pollution")
     .set_modified_at_column("staged_at")
     .flatten()
@@ -207,8 +226,8 @@ from src.destinations.local_directory import LocalDirectory
 
 con = duckdb.connect()  # In memory database
 
-bronze = LocalDirectory(dir="data/bronze")
-silver = LocalDirectory(dir="data/silver")
+bronze = LocalDirectory(directory="../data_example/bronze")
+silver = LocalDirectory(directory="../data_example/silver")
 
 (
     Transformer(con)
@@ -216,6 +235,8 @@ silver = LocalDirectory(dir="data/silver")
         [
             ("sql/silver/weather_recordings_agg.sql", silver),
             # Put here other models that you would like to create
+            # Transformations used in the production thesis pipeline
+            # are available in openweather-functions/sql/
         ]
     )
     .import_tables_from_dir(bronze) # Make available the tables in this directory the in-memory database
