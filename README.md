@@ -11,6 +11,8 @@ The code is structured in the following way
 
 ```shell
 ./
+├── manuscript/
+│ # └─ Delivered manuscript for grading
 ├── example_data/
 │ # └─ Example of data obtained from running the pipeline from 2025-12-01 to 2025-12-07
 ├── media/
