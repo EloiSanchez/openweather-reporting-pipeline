@@ -1,6 +1,6 @@
 # Documentation/Helpers
 data_example/** linguist-documentation
-media/** linguis-documentation
+media/** linguist-documentation
 
 # Generated
-notebooks/*.html linguist-generated
+notebooks/** linguist-generated
