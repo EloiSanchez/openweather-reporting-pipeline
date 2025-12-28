@@ -1,0 +1,6 @@
+# Documentation/Helpers
+data_example/** linguist-documentation
+media/** linguist-documentation
+
+# Generated
+notebooks/** linguist-generated
